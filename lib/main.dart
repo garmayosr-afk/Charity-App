@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'welcome/welcome_page.dart';
-import 'user/user_page.dart';
+import 'screens/welcome/welcome_page.dart';
 
 void main() {
   runApp(const MyApp());

@@ -20,7 +20,9 @@ flutter:
   assets:
     - images/children.jpg
   fonts:
-      - family: Roboto
-        fonts:
-          - asset: assets/fonts/Poppins-Regular.ttf
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto/static/Roboto-Italic.ttf
+          style: italic
+        - asset: fonts/Roboto/Roboto-VariableFont.ttf
   uses-material-design: true
