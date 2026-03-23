@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Donator/donator_page.dart';
-import '../orphanage/orphanage_page.dart';
+import '../auth/login_page.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -14,6 +13,7 @@ class UserPage extends StatelessWidget {
       ),
       body: Container(
         width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -97,7 +97,7 @@ class UserPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const DonatorPage(),
+                                  builder: (context) => const LoginPage(),
                                 ),
                               );
                             },
@@ -161,7 +161,7 @@ class UserPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const OrphanagePage(),
+                                  builder: (context) => const LoginPage(),
                                 ),
                               );
                             },

@@ -9,7 +9,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  google_sign_in: ^6.1.5
+  firebase_auth: ^4.17.0
+  firebase_core: ^2.27.0
   cupertino_icons: ^1.0.8
+
 
 dev_dependencies:
   flutter_test:
@@ -19,6 +24,7 @@ dev_dependencies:
 flutter:
   assets:
     - images/children.jpg
+    - images/google.png
   fonts:
     - family: Roboto
       fonts:
