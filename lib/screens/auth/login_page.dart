@@ -3,6 +3,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Donator/donator_page.dart';
 import 'signup_page.dart';
+import '../../widgets/background.dart';
+import '../../widgets/text_field.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -59,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _emailController.dispose(); //Clean up controllers when the page is disposed (prevents memory leaks)
     _passwordController.dispose();
     super.dispose();
   }
@@ -71,19 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text("Welcome Back"),
         centerTitle: true,
       ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF1E9DC),
-              Color(0xFFDDE6DB),
-            ],
-          ),
-        ),
+      body: Background(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -151,45 +141,18 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  TextField(
+                  AppTextField(
                     controller: _emailController,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Roboto',
-                      color: Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Colors.orangeAccent),
-                      ),
-                    ),
+                    hintText: 'Email',
+                    label: 'Email',
                   ),
+
                   const SizedBox(height: 20),
-                  TextField(
+                  AppTextField(
                     controller: _passwordController,
+                    hintText: 'Password',
                     obscureText: true,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Roboto',
-                      color: Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Colors.orangeAccent),
-                      ),
-                    ),
+                    label: 'Password',
                   ),
                   const SizedBox(height: 20),
                   SizedBox(

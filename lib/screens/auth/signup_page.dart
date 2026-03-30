@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import'../../widgets/background.dart';
+import '../../widgets/text_field.dart';
+
 
 class SignupPage extends StatelessWidget {
   const SignupPage({super.key});
@@ -7,19 +12,7 @@ class SignupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF1E9DC),
-              Color(0xFFDDE6DB),
-            ],
-          ),
-        ),
+      body: Background(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -36,72 +29,21 @@ class SignupPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  Text(
-                    "Full Name",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   const SizedBox(height: 50),
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Full Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Colors.orangeAccent),
-                      ),
-                    ),
+                  AppTextField(
+                    hintText: 'Full Name',
+                    label: 'Full Name',
                   ),
                   const SizedBox(height: 30),
-                  Text(
-                    "Email",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Colors.orangeAccent),
-                      ),
-                    ),
+                  AppTextField(
+                    hintText: 'Email',
+                    label: 'Email',
                   ),
                   const SizedBox(height: 30),
-                  Text(
-                    "Password",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
+                 AppTextField(
+                    hintText: 'Password',
                     obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Colors.orangeAccent),
-                      ),
-                    ),
+                    label: 'Password',
                   ),
 
                   const SizedBox(height: 30),
@@ -116,6 +58,19 @@ class SignupPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
+
+                        Future<void> signUp(String name, String email, String password) async {
+                          UserCredential userCredential = await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(email: email, password: password);
+
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(userCredential.user!.uid)
+                              .set({
+                            'name': name,
+                            'email': email,
+                          });
+                        }
                         Navigator.push(
                           context,
                           MaterialPageRoute(

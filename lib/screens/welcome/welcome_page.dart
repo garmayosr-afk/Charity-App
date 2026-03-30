@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../user/user_page.dart';
+import '../../widgets/background.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -7,18 +8,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF1E9DC),
-              Color(0xFFDDE6DB),
-            ],
-          ),
-        ),
+      body: Background(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -172,6 +162,7 @@ class WelcomePage extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

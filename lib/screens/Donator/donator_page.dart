@@ -52,8 +52,6 @@ class _DonatorPageState extends State<DonatorPage> {
                   ),
 
                   const SizedBox(height: 20),
-
-                  // 🏠 Orphanages list
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('orphanages')

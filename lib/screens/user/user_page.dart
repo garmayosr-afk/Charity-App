@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../auth/login_page.dart';
+import '../../widgets/background.dart';
+import '../../widgets/card.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -11,19 +13,7 @@ class UserPage extends StatelessWidget {
         title: const Text("Select Your Role"),
         centerTitle: true,
       ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF1E9DC),
-              Color(0xFFDDE6DB),
-            ],
-          ),
-        ),
+      body: Background(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -41,144 +31,47 @@ class UserPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.blue,
-                          child: Icon(
-                            Icons.person,
-                            size: 30,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        const Text(
-                          "I Want To Donate",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Roboto',
-                            color: Colors.blue,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Support orphanages by making donations, sponsoring children, or funding specific projects",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        const SizedBox(height: 15),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginPage(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              "Continue as Donator",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                  RoleCard(
+                    icon: Icons.person,
+                    color: Colors.blue,
+                    title: "I Want To Donate",
+                    description:
+                    "Support orphanages by making donations, sponsoring children, or funding specific projects",
+                    buttonText: "Continue as Donator",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return const LoginPage();
+                        }),
+                      );
+                    },
+                  ),
+              const SizedBox(height: 20),
+
+              RoleCard(
+                icon: Icons.home,
+                color: Colors.lightGreen,
+                title: "I Represent an Orphanage",
+                description:
+                "Register your orphanage to receive donations, manage needs, and connect with donors",
+                buttonText: "Continue as Orphanage",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return const LoginPage();
+                    }),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.lightGreen,
-                          child: Icon(
-                            Icons.home,
-                            color: Colors.green,
-                            size: 30,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        const Text(
-                          "I Represent an Orphanage",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Roboto',
-                            color: Colors.lightGreen,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Register your orphanage to receive donations, manage needs, and connect with donors",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                        const SizedBox(height: 15),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginPage(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.lightGreen,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: const Text("Continue as Orphanage"),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
