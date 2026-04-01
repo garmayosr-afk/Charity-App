@@ -4,11 +4,35 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import'../../widgets/background.dart';
 import '../../widgets/text_field.dart';
+import 'login_page.dart';
 
+Future<void> signUp(String name, String email, String password) async {
+  UserCredential userCredential = await FirebaseAuth.instance
+      .createUserWithEmailAndPassword(email: email, password: password);
 
-class SignupPage extends StatelessWidget {
-  const SignupPage({super.key});
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userCredential.user!.uid)
+      .set({
+    'name': name,
+    'email': email,
+  });}
 
+class SignupPage extends StatefulWidget {
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+   SignupPage({super.key,
+  required this.nameController,
+  required this.emailController,
+  required this.passwordController,});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,31 +81,27 @@ class SignupPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {
-
-                        Future<void> signUp(String name, String email, String password) async {
-                          UserCredential userCredential = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(email: email, password: password);
-
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(userCredential.user!.uid)
-                              .set({
-                            'name': name,
-                            'email': email,
-                          });
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()),
+                      onPressed: () async {
+                        await signUp(
+                          widget.nameController.text.trim(),
+                          widget.emailController.text.trim(),
+                          widget.passwordController.text.trim(),
                         );
-                      },
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        if (mounted &&
+                            FirebaseAuth.instance.currentUser != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginPage()),
+                          );
+                        };
+                        child:
+                        const Text(
+                          "Sign Up",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        );
+                      }
                       ),
-                    ),
                   ),
                   const SizedBox(height: 20),
                   Row(

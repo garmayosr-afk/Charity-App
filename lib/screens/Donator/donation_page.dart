@@ -1,25 +1,107 @@
+import 'package:charity_app/screens/Donator/adress_page.dart';
 import 'package:flutter/material.dart';
+import '../../widgets/background.dart';
+import '../payement/prepayement_page.dart';
+import '../../widgets/card.dart';
+import 'adress_page.dart';
+
 
 class DonationPage extends StatelessWidget {
-  const DonationPage ({super.key});
+  const DonationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFF1E9DC),
-                Color(0xFFDDE6DB),
-              ],
+      appBar: AppBar(
+        title: const Text("Donate Now"),
+        centerTitle: true,
+      ),
+      body: Background(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Choose A Campaign To Donate',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFFB08060),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  RoleCard(
+                    icon: Icons.attach_money,
+                    color: Colors.orangeAccent,
+                    title: "Food Donation ",
+                    description:
+                    "Donate Money Directly",
+                    buttonText: "Donate Money",
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(
+                       builder: (context) => const PrepayementPage(),
+                      ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+                  RoleCard(
+                    icon: Icons.checkroom,
+                    color: Colors.orangeAccent,
+                    title: "Clothes Donation ",
+                    description:
+                    "Donate new or gently used clothing for children of all ages. Warmth is a gift.",
+                    buttonText: "Donate Clothes",
+                    onPressed: () {
+                      /Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => const AdressePage(),
+                      ));
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+                  RoleCard(
+                    icon: Icons.restaurant,
+                    color: Colors.orangeAccent,
+                    title: "Food Donation ",
+                    description:
+                    "Provide meals, groceries, or baby formula to orphanages in need.",
+                    buttonText: "Donate Food",
+                    onPressed: () {
+                       Navigator.push(context, MaterialPageRoute(
+                         builder: (context) => const AdressePage(),
+                       ));
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+                  RoleCard(
+                    icon: Icons.book,
+                    color: Colors.orangeAccent,
+                    title: "Fund A School Project ",
+                    description:
+                    "Help provide educational materials, books, and learning resources for children.",
+                    buttonText: "Fund a Project",
+                    onPressed: () {
+                       Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => const AdressePage(),
+                       ));
+                    },
+                  ),
+
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
+      ),
     );
   }
 }

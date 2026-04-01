@@ -36,7 +36,7 @@ class UserPage extends StatelessWidget {
                     color: Colors.blue,
                     title: "I Want To Donate",
                     description:
-                    "Support orphanages by making donations, sponsoring children, or funding specific projects",
+                        "Support orphanages by making donations, sponsoring children, or funding specific projects",
                     buttonText: "Continue as Donator",
                     onPressed: () {
                       Navigator.push(
@@ -47,31 +47,24 @@ class UserPage extends StatelessWidget {
                       );
                     },
                   ),
-              const SizedBox(height: 20),
-
-              RoleCard(
-                icon: Icons.home,
-                color: Colors.lightGreen,
-                title: "I Represent an Orphanage",
-                description:
-                "Register your orphanage to receive donations, manage needs, and connect with donors",
-                buttonText: "Continue as Orphanage",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return const LoginPage();
-                    }),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 20),
-                          ),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 20),
+                  RoleCard(
+                    icon: Icons.home,
+                    color: Colors.lightGreen,
+                    title: "I Represent an Orphanage",
+                    description:
+                        "Register your orphanage to receive donations, manage needs, and connect with donors",
+                    buttonText: "Continue as Orphanage",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return const LoginPage();
+                        }),
+                      );
+                    },
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

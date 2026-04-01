@@ -162,7 +162,7 @@ class WelcomePage extends StatelessWidget {
           ),
         ),
       ),
-    ),
     );
   }
 }
+

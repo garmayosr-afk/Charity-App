@@ -16,8 +16,6 @@ class AppTextField extends StatelessWidget {
     this.controller,
     required this.hintText,
     this.obscureText = false,
-    this.keyboardType = TextInputType.text,
-    this.textCapitalization = TextCapitalization.none,
     this.label,
     this.prefixIcon,
     this.onChanged,
