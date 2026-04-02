@@ -24,9 +24,11 @@ class PayementMethodPage extends StatelessWidget {
                 children: [
                   const SizedBox(height: 40),
                   RoleCard(
+                    description: "Pay with a postal card",
+                    title: 'Postal Card',
                     icon: Icons.card_giftcard,
                     color: Colors.green,
-                    buttonText: "Postal Card",
+                    buttonText: "Continue",
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -38,9 +40,11 @@ class PayementMethodPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   RoleCard(
+                    description: "Pay with a bank card",
+                    title: "Bank Card",
                     icon: Icons.wallet,
                     color: Colors.lightGreen,
-                    buttonText: "Bank Card",
+                    buttonText: "continue",
                     onPressed: () {
                       Navigator.push(
                         context,

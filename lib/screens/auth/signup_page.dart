@@ -86,6 +86,7 @@ class _SignupPageState extends State<SignupPage> {
                           widget.emailController.text.trim(),
                           widget.passwordController.text.trim(),
                         );
+
                         if (mounted &&
                             FirebaseAuth.instance.currentUser != null) {
                           Navigator.push(

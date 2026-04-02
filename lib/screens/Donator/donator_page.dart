@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Donator/donation_page.dart';
+import'../Donator/donation_history_page.dart';
+import'../Donator/my_account.dart';
+import'../Donator/about_us.dart';
 
 class DonatorPage extends StatefulWidget {
   const DonatorPage({super.key});

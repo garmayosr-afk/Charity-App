@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
+import 'personalinfo_page.dart';
 
 class PrepayementPage extends StatefulWidget {
   const PrepayementPage({super.key});
@@ -226,7 +227,8 @@ class _PrepayementPageState extends State<PrepayementPage> {
                     ),
                   ],
                 ),
-              ),
+              ],
+                ),
             ),
           ),
         ),

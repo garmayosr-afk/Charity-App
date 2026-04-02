@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 
-
-class PaymentPage extends StatelessWidget {
-  const PaymentPage({super.key});
+class MyaccountPage extends StatelessWidget {
+  const MyaccountPage ({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Background(
         child: Center(
-          child: Text("Payment"),
+          child: Text("My Account"),
         ),
       ),
     );
