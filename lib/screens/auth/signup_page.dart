@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import'../../widgets/background.dart';
 import '../../widgets/text_field.dart';
-import 'login_page.dart';
 
 Future<void> signUp(String name, String email, String password) async {
   UserCredential userCredential = await FirebaseAuth.instance
@@ -23,10 +22,7 @@ class SignupPage extends StatefulWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-   SignupPage({super.key,
-  required this.nameController,
-  required this.emailController,
-  required this.passwordController,});
+  SignupPage({super.key});
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -55,16 +51,19 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 50),
                   AppTextField(
+                    controller: widget.nameController,
                     hintText: 'Full Name',
                     label: 'Full Name',
                   ),
                   const SizedBox(height: 30),
                   AppTextField(
+                    controller: widget.emailController,
                     hintText: 'Email',
                     label: 'Email',
                   ),
                   const SizedBox(height: 30),
-                 AppTextField(
+                  AppTextField(
+                    controller: widget.passwordController,
                     hintText: 'Password',
                     obscureText: true,
                     label: 'Password',
@@ -94,14 +93,13 @@ class _SignupPageState extends State<SignupPage> {
                             MaterialPageRoute(
                                 builder: (context) => const LoginPage()),
                           );
-                        };
-                        child:
-                        const Text(
-                          "Sign Up",
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        );
-                      }
+                        }
+                      },
+                      child: const Text(
+                        "Sign Up",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Row(

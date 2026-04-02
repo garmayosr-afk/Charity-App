@@ -59,7 +59,7 @@ class DonationPage extends StatelessWidget {
                     "Donate new or gently used clothing for children of all ages. Warmth is a gift.",
                     buttonText: "Donate Clothes",
                     onPressed: () {
-                      /Navigator.push(context, MaterialPageRoute(
+                      Navigator.push(context, MaterialPageRoute(
                         builder: (context) => const AdressePage(),
                       ));
                     },

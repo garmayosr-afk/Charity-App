@@ -12,6 +12,62 @@ class DonatorPage extends StatefulWidget {
 class _DonatorPageState extends State<DonatorPage> {
   String searchQuery = '';
   String? selectedOrphanageId;
+  int _selectedIndex = 2;
+
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+  }) {
+    bool isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+
+          if (index == 0) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const MyaccountPage()));
+          } else if (index == 3) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const DonationPage()));
+          } else if (index == 1) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const DonationhistoryPage()));
+          } else if (index == 4) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutUsPage()));
+          }
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: iconColor, size: 28),
+          const SizedBox(height: 4),
+          if (isSelected)
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.orange,
+                shape: BoxShape.circle,
+              ),
+            )
+          else
+            const SizedBox(height: 6),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isSelected ? Colors.orange : Colors.grey,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +189,34 @@ class _DonatorPageState extends State<DonatorPage> {
           ),
         ),
       ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.only(top: 15, bottom: 20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+          boxShadow: [
+            BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 1),
+          ],
+        ),
+        child: SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildNavItem(index: 0, icon: Icons.person, iconColor: Colors.purple, label: 'My Account'),
+              _buildNavItem(index: 1, icon: Icons.assignment, iconColor: Colors.brown, label: 'Donations'),
+              _buildNavItem(index: 2, icon: Icons.home, iconColor: Colors.orange, label: 'Home'),
+              _buildNavItem(index: 3, icon: Icons.card_giftcard, iconColor: Colors.amber, label: 'Donate Now'),
+              _buildNavItem(index: 4, icon: Icons.info, iconColor: Colors.blue, label: 'About Us'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
+
+

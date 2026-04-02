@@ -112,7 +112,9 @@ class _LoginPageState extends State<LoginPage> {
                       label: const Text("Sign in with Google"),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
+                            horizontal: 20,
+                            vertical: 12
+                        ),
                       ),
                     ),
                   ),
