@@ -97,45 +97,53 @@ class _PrepayementPageState extends State<PrepayementPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                  Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFBEADB),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.import_contacts,
-                        color: Color(0xFFDF5A20),
-                        size: 28,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-                    Container(
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: FractionallySizedBox(
-                        alignment: Alignment.centerLeft,
-                        widthFactor: 0.65,
-                        child: Container(
+                    // Icon + Progress Bar Row
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFF7A00), Color(0xFFFFB800)],
-                            ),
-                            borderRadius: BorderRadius.circular(5),
+                            color: const Color(0xFFFBEADB),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.import_contacts,
+                            color: Color(0xFFDF5A20),
+                            size: 28,
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: FractionallySizedBox(
+                              alignment: Alignment.centerLeft,
+                              widthFactor: 0.65,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFFF7A00),
+                                      Color(0xFFFFB800),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
 
                     const SizedBox(height: 30),
 
+                    // Title
                     const Text(
                       "Select an amount",
                       style: TextStyle(
@@ -144,7 +152,10 @@ class _PrepayementPageState extends State<PrepayementPage> {
                         color: Color(0xFF132F4C),
                       ),
                     ),
+
                     const SizedBox(height: 16),
+
+                    // Amount buttons row 1
                     Row(
                       children: [
                         _buildAmountButton(25),
@@ -152,7 +163,10 @@ class _PrepayementPageState extends State<PrepayementPage> {
                         _buildAmountButton(50),
                       ],
                     ),
+
                     const SizedBox(height: 16),
+
+                    // Amount buttons row 2
                     Row(
                       children: [
                         _buildAmountButton(100),
@@ -162,35 +176,46 @@ class _PrepayementPageState extends State<PrepayementPage> {
                     ),
 
                     const SizedBox(height: 16),
+
+                    // Custom amount field
                     TextField(
                       controller: _customAmountController,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.attach_money, color: Colors.grey),
+                        prefixIcon: const Icon(
+                          Icons.attach_money,
+                          color: Colors.grey,
+                        ),
                         hintText: "Custom amount",
                         hintStyle: const TextStyle(color: Colors.grey),
                         filled: true,
                         fillColor: Colors.grey.shade50,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade200),
+                          borderSide:
+                          BorderSide(color: Colors.grey.shade200),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade200),
+                          borderSide:
+                          BorderSide(color: Colors.grey.shade200),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.orange),
+                          borderSide:
+                          const BorderSide(color: Colors.orange),
                         ),
                       ),
                       onChanged: (value) {
                         setState(() {
-                          _selectedAmount = null; // Unselect buttons if typing
+                          _selectedAmount = null;
                         });
                       },
                     ),
 
                     const SizedBox(height: 30),
+
+                    // Continue button
                     Container(
                       width: double.infinity,
                       height: 55,
@@ -205,8 +230,11 @@ class _PrepayementPageState extends State<PrepayementPage> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const InformationsPage()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const InformationsPage(),
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
@@ -227,13 +255,11 @@ class _PrepayementPageState extends State<PrepayementPage> {
                     ),
                   ],
                 ),
-              ],
-                ),
+              ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 }

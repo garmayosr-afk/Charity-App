@@ -15,6 +15,8 @@ Future<void> signUp(String name, String email, String password) async {
       .set({
     'name': name,
     'email': email,
+
+
   });}
 
 class SignupPage extends StatefulWidget {

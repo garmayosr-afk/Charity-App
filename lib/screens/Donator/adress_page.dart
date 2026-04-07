@@ -8,9 +8,7 @@ class AdressePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Background(
-        child: Center(
-          child: Text("Address Page"),
-        ),
+        child: Text("You Can Donate To The Following Adresses"),
       ),
     );
   }

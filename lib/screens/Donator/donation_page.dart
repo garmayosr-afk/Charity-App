@@ -38,7 +38,7 @@ class DonationPage extends StatelessWidget {
                   RoleCard(
                     icon: Icons.attach_money,
                     color: Colors.orangeAccent,
-                    title: "Food Donation ",
+                    title: "Money Donation ",
                     description:
                     "Donate Money Directly",
                     buttonText: "Donate Money",
@@ -54,44 +54,14 @@ class DonationPage extends StatelessWidget {
                   RoleCard(
                     icon: Icons.checkroom,
                     color: Colors.orangeAccent,
-                    title: "Clothes Donation ",
+                    title: "Other Donations ",
                     description:
-                    "Donate new or gently used clothing for children of all ages. Warmth is a gift.",
-                    buttonText: "Donate Clothes",
+                    "Donate new or gently used clothing, Food And School Materials for children of all ages",
+                    buttonText: "Donate now",
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) => const AdressePage(),
                       ));
-                    },
-                  ),
-
-                  const SizedBox(height: 16),
-                  RoleCard(
-                    icon: Icons.restaurant,
-                    color: Colors.orangeAccent,
-                    title: "Food Donation ",
-                    description:
-                    "Provide meals, groceries, or baby formula to orphanages in need.",
-                    buttonText: "Donate Food",
-                    onPressed: () {
-                       Navigator.push(context, MaterialPageRoute(
-                         builder: (context) => const AdressePage(),
-                       ));
-                    },
-                  ),
-
-                  const SizedBox(height: 16),
-                  RoleCard(
-                    icon: Icons.book,
-                    color: Colors.orangeAccent,
-                    title: "Fund A School Project ",
-                    description:
-                    "Help provide educational materials, books, and learning resources for children.",
-                    buttonText: "Fund a Project",
-                    onPressed: () {
-                       Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => const AdressePage(),
-                       ));
                     },
                   ),
 
