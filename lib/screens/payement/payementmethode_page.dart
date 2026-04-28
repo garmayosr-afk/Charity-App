@@ -33,7 +33,7 @@ class PayementMethodPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          return const PaymentPage();
+                          return const PaymentPage(paymentMethod: "postal");
                         }),
                       );
                     },
@@ -49,7 +49,7 @@ class PayementMethodPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          return const PaymentPage();
+                          return const PaymentPage(paymentMethod: "bank");
                         }),
                       );
                     },
