@@ -42,7 +42,7 @@ class UserPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          return const LoginPage();
+                          return const LoginPage(userRole: 'donor');
                         }),
                       );
                     },
@@ -59,7 +59,7 @@ class UserPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          return const LoginPage();
+                          return const LoginPage(userRole: 'orphanage');
                         }),
                       );
                     },

@@ -154,18 +154,18 @@ class _SplashScreenState extends State<SplashScreen>
           // ── Twinkling stars ──
           for (final s in _starData)
             Positioned(
-              left: screenSize.width * (s[0] as double),
-              top: screenSize.height * (s[1] as double),
+              left: screenSize.width * (s[0]),
+              top: screenSize.height * (s[1]),
               child: AnimatedBuilder(
                 animation: _starController,
                 builder: (context, _) {
                   final phase =
-                      (_starController.value + (s[3] as double)) % 1.0;
+                      (_starController.value + (s[3])) % 1.0;
                   final opacity =
                   (0.15 + 0.85 * math.sin(phase * math.pi)).clamp(0.0, 1.0);
                   return Opacity(
                     opacity: opacity,
-                    child: _SparkleWidget(size: s[2] as double),
+                    child: _SparkleWidget(size: s[2]),
                   );
                 },
               ),

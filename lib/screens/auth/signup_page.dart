@@ -1,36 +1,74 @@
+import 'package:charity_app/screens/Donator/donator_page.dart';
+import 'package:charity_app/screens/orphanage/orphanage_page.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import'../../widgets/background.dart';
+import '../../widgets/background.dart';
 import '../../widgets/text_field.dart';
 
-Future<void> signUp(String name, String email, String password) async {
-  UserCredential userCredential = await FirebaseAuth.instance
-      .createUserWithEmailAndPassword(email: email, password: password);
+Future<void> signUp(BuildContext context, String name, String email, String password, String role) async {
+  try {
+    debugPrint("1. Starting Auth creation...");
+    UserCredential userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+    debugPrint("2. Auth successful! Saving to Firestore...");
 
-  await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userCredential.user!.uid)
-      .set({
-    'name': name,
-    'email': email,
+    String uid = userCredential.user!.uid;
 
+    // 1. Always create the user document in the 'users' collection
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'name': name,
+      'email': email,
+      'uid': uid,
+      'userRole': role, 
+    });
 
-  });}
+    // 2. NEW LOGIC: If they are an orphanage, create the orphanage profile too!
+    if (role == 'orphanage') {
+      await FirebaseFirestore.instance.collection('orphanages').doc(uid).set({
+        'name' :name,
+        'orphanage_id': uid,
+        'general_funds_raised': 0,
+        'unique_donors': [], 
+      });
+      debugPrint("Orphanage profile created successfully!");
+    }
+
+    debugPrint("3. Firestore save complete!");
+  } on FirebaseAuthException catch (e) {
+    debugPrint("Auth Error: ${e.code} - ${e.message}");
+    // Good practice: show the error to the user
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? "Authentication failed")));
+    }
+  } catch (e) {
+    debugPrint("Firestore Error: $e");
+  }
+}
 
 class SignupPage extends StatefulWidget {
+  // We added this variable to hold the role ('donor' or 'orphanage')
+  final String userRole; 
 
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  SignupPage({super.key});
+  const SignupPage({super.key, required this.userRole}); 
 
   @override
   State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,26 +90,30 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                   const SizedBox(height: 50),
+                  
+                  // Fixed: Removed the duplicate Full Name field
                   AppTextField(
-                    controller: widget.nameController,
-                    hintText: 'Full Name',
+                    controller: nameController,
+                    hintText:'Full Name',
                     label: 'Full Name',
                   ),
                   const SizedBox(height: 30),
+                  
                   AppTextField(
-                    controller: widget.emailController,
+                    controller: emailController,
                     hintText: 'Email',
                     label: 'Email',
                   ),
                   const SizedBox(height: 30),
+                  
                   AppTextField(
-                    controller: widget.passwordController,
+                    controller: passwordController,
                     hintText: 'Password',
                     obscureText: true,
                     label: 'Password',
                   ),
-
                   const SizedBox(height: 30),
+
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -83,19 +125,32 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       ),
                       onPressed: () async {
+                        // Small check to make sure fields aren't empty
+                        if (nameController.text.isEmpty || emailController.text.isEmpty || passwordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
+                          return;
+                        }
+
                         await signUp(
-                          widget.nameController.text.trim(),
-                          widget.emailController.text.trim(),
-                          widget.passwordController.text.trim(),
+                          context,
+                          nameController.text.trim(),
+                          emailController.text.trim(),
+                          passwordController.text.trim(),
+                          widget.userRole, 
                         );
 
-                        if (mounted &&
-                            FirebaseAuth.instance.currentUser != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginPage()),
-                          );
+                        if (mounted && FirebaseAuth.instance.currentUser != null) {
+                          if (widget.userRole == 'donor') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const DonatorPage()),
+                            );
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const OrphanagePage()), 
+                            );
+                          }
                         }
                       },
                       child: const Text(

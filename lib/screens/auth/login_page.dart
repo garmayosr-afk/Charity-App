@@ -1,3 +1,4 @@
+import 'package:charity_app/screens/orphanage/orphanage_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,26 +6,57 @@ import '../Donator/donator_page.dart';
 import 'signup_page.dart';
 import '../../widgets/background.dart';
 import '../../widgets/text_field.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-Future<void> login(String email, String password) async {
+Future<bool> login(BuildContext context, String email, String password) async {
   try {
-    await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    debugPrint("Login successful ");
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
+
+    //return true because login succeeded!
+    return true;
   } on FirebaseAuthException catch (e) {
+    String errorMessage = "An error occurred. Please try again.";
     if (e.code == 'user-not-found') {
-      debugPrint("No user found for that email ");
+      errorMessage = "No account found with this email.";
     } else if (e.code == 'wrong-password') {
-      debugPrint("Wrong password ");
+      errorMessage = "Incorrect password. Please try again.";
+    } else if (e.code == 'invalid-credential') {
+      errorMessage = "Incorrect email or password.";
+    } else if (e.code == 'invalid-email') {
+      errorMessage = "The email address is badly formatted.";
     } else {
-      debugPrint("Auth Error: ${e.message}");
+      errorMessage = e.message ?? errorMessage;
     }
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            errorMessage,
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
+    //added return false to tell the button to STOP
+    return false;
   } catch (e) {
-    debugPrint("Error: $e");
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("An unexpected error occurred."),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
+    //added return false to tell the button to STOP
+    return false;
   }
 }
 
@@ -49,7 +81,10 @@ Future<UserCredential?> signInWithGoogle() async {
 }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  // Add the role variable here too
+  final String userRole;
+
+  const LoginPage({super.key, required this.userRole});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -61,7 +96,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _emailController.dispose(); //Clean up controllers when the page is disposed (prevents memory leaks)
+    _emailController
+        .dispose(); //Clean up controllers when the page is disposed (prevents memory leaks)
     _passwordController.dispose();
     super.dispose();
   }
@@ -69,10 +105,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Welcome Back"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Welcome Back"), centerTitle: true),
       body: Background(
         child: SafeArea(
           child: Padding(
@@ -81,15 +114,16 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-                  const Text(
-                    "Donator Login",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontFamily: 'Roboto',
-                      color: Colors.black,
-                    ),
+                  Text(
+                  widget.userRole== 'orphanage' ? "Orphanage Login" : "Donor Login",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontFamily: 'Roboto',
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
@@ -101,19 +135,17 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const DonatorPage()),
+                              builder: (context) => const DonatorPage(),
+                            ),
                           );
                         }
                       },
-                      icon: Image.asset(
-                        'images/google.png',
-                        height: 24,
-                      ),
+                      icon: Image.asset('images/google.png', height: 24),
                       label: const Text("Sign in with Google"),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12
+                          horizontal: 20,
+                          vertical: 12,
                         ),
                       ),
                     ),
@@ -168,18 +200,51 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       onPressed: () async {
-                        await login(
+                        // 1. Force Firebase to forget any old successful logins on this device
+                        await FirebaseAuth.instance.signOut();
+
+                        // 2. Run your updated login function and save the answer (true or false)
+                        bool success = await login(
+                          context,
                           _emailController.text.trim(),
                           _passwordController.text.trim(),
                         );
-                        if (mounted &&
+
+                        // 3. The Lock: ONLY run the rest of the code if success is EXACTLY true
+                        if (success == true &&
+                            mounted &&
                             FirebaseAuth.instance.currentUser != null) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DonatorPage(),
-                            ),
-                          );
+                          String uid = FirebaseAuth.instance.currentUser!.uid;
+
+                          try {
+                            DocumentSnapshot userDoc = await FirebaseFirestore
+                                .instance
+                                .collection('users')
+                                .doc(uid)
+                                .get();
+
+                            if (userDoc.exists && mounted) {
+                              String fetchedRole = userDoc.get('userRole');
+
+                              if (fetchedRole == 'donor') {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const DonatorPage(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const OrphanagePage(),
+                                  ),
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            debugPrint("Database Error: $e");
+                          }
                         }
                       },
                       child: const Text(
@@ -198,7 +263,9 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SignupPage()),
+                              builder: (context) =>
+                                  SignupPage(userRole: widget.userRole),
+                            ),
                           );
                         },
                         style: TextButton.styleFrom(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'screens/welcome/welcome_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'splash_screen.dart';
 
