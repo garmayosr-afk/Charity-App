@@ -1,8 +1,6 @@
-import 'package:charity_app/screens/orphanage/orphanage_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Donator/donator_page.dart';
 import 'signup_page.dart';
 import '../../widgets/background.dart';
@@ -10,10 +8,14 @@ import '../../widgets/text_field.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
+/// Attempts login and returns an error message string, or null on success.
 Future<String?> login(String email, String password) async {
   try {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
-    return null;
+    await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return null; // success
   } on FirebaseAuthException catch (e) {
     if (e.code == 'user-not-found') {
       return 'No account found with this email.';
@@ -37,26 +39,26 @@ Future<String?> login(String email, String password) async {
 
 Future<UserCredential?> signInWithGoogle() async {
   try {
-    final googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) return null;
 
-    final googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
 
-    return FirebaseAuth.instance.signInWithCredential(credential);
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   } catch (e) {
-    debugPrint('Google sign-in error: $e');
+    debugPrint("Error: $e");
     return null;
   }
 }
 
 class LoginPage extends StatefulWidget {
-  final String userRole;
-
-  const LoginPage({super.key, required this.userRole});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -116,7 +118,8 @@ class _LoginPageState extends State<LoginPage> {
       return false;
     }
 
-    final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+    // Basic email format check
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(email)) {
       _showSnackBar('Please enter a valid email address.');
       return false;
@@ -135,46 +138,16 @@ class _LoginPageState extends State<LoginPage> {
     return true;
   }
 
-  Future<void> _routeAuthenticatedUser({String? fallbackRole}) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    String role = fallbackRole ?? widget.userRole;
-
-    try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      final data = userDoc.data();
-      role = data?['userRole'] as String? ?? role;
-    } catch (e) {
-      debugPrint('Role lookup error: $e');
-    }
-
-    if (!mounted) return;
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            role == 'orphanage' ? const OrphanagePage() : const DonatorPage(),
-      ),
-    );
-  }
-
   Future<void> _handleLogin() async {
     if (!_validateInputs()) return;
 
     setState(() => _isLoading = true);
 
-    await FirebaseAuth.instance.signOut();
     final error = await login(
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
 
-    if (!mounted) return;
     setState(() => _isLoading = false);
 
     if (error != null) {
@@ -182,10 +155,16 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    _showSnackBar('Login successful!', isError: false);
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted) return;
-    await _routeAuthenticatedUser();
+    if (mounted && FirebaseAuth.instance.currentUser != null) {
+      _showSnackBar('Login successful!', isError: false);
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DonatorPage()),
+        );
+      }
+    }
   }
 
   Future<void> _handleGoogleSignIn() async {
@@ -193,27 +172,30 @@ class _LoginPageState extends State<LoginPage> {
 
     final user = await signInWithGoogle();
 
-    if (!mounted) return;
     setState(() => _isLoading = false);
 
-    if (user == null) {
+    if (user != null && mounted) {
+      _showSnackBar('Signed in as ${user.user?.displayName ?? "user"}!',
+          isError: false);
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DonatorPage()),
+        );
+      }
+    } else if (mounted) {
       _showSnackBar('Google sign-in was cancelled or failed.');
-      return;
     }
-
-    _showSnackBar(
-      'Signed in as ${user.user?.displayName ?? "user"}!',
-      isError: false,
-    );
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted) return;
-    await _routeAuthenticatedUser(fallbackRole: widget.userRole);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Welcome Back'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Welcome Back"),
+        centerTitle: true,
+      ),
       body: Background(
         child: SafeArea(
           child: Padding(
@@ -222,16 +204,13 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-                  Text(
-                    widget.userRole == 'orphanage'
-                        ? 'Orphanage Login'
-                        : 'Donor Login',
+                  const Text(
+                    "Donator Login",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontFamily: 'Roboto',
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -239,13 +218,14 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: _isLoading ? null : _handleGoogleSignIn,
-                      icon: Image.asset('images/google.png', height: 24),
-                      label: const Text('Sign in with Google'),
+                      icon: Image.asset(
+                        'images/google.png',
+                        height: 24,
+                      ),
+                      label: const Text("Sign in with Google"),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
+                            horizontal: 20, vertical: 12),
                       ),
                     ),
                   ),
@@ -279,6 +259,7 @@ class _LoginPageState extends State<LoginPage> {
                     hintText: 'Email',
                     label: 'Email',
                   ),
+
                   const SizedBox(height: 20),
                   AppTextField(
                     controller: _passwordController,
@@ -308,11 +289,9 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             )
                           : const Text(
-                              'Login',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
+                              "Login",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
                             ),
                     ),
                   ),
@@ -326,9 +305,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  SignupPage(userRole: widget.userRole),
-                            ),
+                                builder: (context) => SignupPage()),
                           );
                         },
                         style: TextButton.styleFrom(
@@ -338,7 +315,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        child: const Text('Sign up'),
+                        child: const Text("Sign up"),
                       ),
                     ],
                   ),

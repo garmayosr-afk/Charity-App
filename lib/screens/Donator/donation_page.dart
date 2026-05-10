@@ -3,14 +3,21 @@ import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../payement/prepayement_page.dart';
 import '../../widgets/card.dart';
+import 'adress_page.dart';
+
 
 class DonationPage extends StatelessWidget {
-  const DonationPage({super.key});
+  final String? orphanageId;
+
+  const DonationPage({super.key, this.orphanageId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Donate Now"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Donate Now"),
+        centerTitle: true,
+      ),
       body: Background(
         child: SafeArea(
           child: Padding(
@@ -21,7 +28,10 @@ class DonationPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   const Text(
                     'Choose A Campaign To Donate',
-                    style: TextStyle(fontSize: 15, color: Color(0xFFB08060)),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFFB08060),
+                    ),
                     textAlign: TextAlign.center,
                   ),
 
@@ -31,14 +41,13 @@ class DonationPage extends StatelessWidget {
                     icon: Icons.attach_money,
                     color: Colors.orangeAccent,
                     title: "Money Donation ",
-                    description: "Donate Money Directly",
+                    description:
+                    "Donate Money Directly",
                     buttonText: "Donate Money",
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PrepayementPage(),
-                        ),
+                      Navigator.push(context, MaterialPageRoute(
+                       builder: (context) => PrepayementPage(orphanageId: orphanageId),
+                      ),
                       );
                     },
                   ),
@@ -49,15 +58,12 @@ class DonationPage extends StatelessWidget {
                     color: Colors.orangeAccent,
                     title: "Other Donations ",
                     description:
-                        "Donate new or gently used clothing, Food And School Materials for children of all ages",
+                    "Donate new or gently used clothing, Food And School Materials for children of all ages",
                     buttonText: "Donate now",
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AdressePage(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => const AdressePage(),
+                      ));
                     },
                   ),
 

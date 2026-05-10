@@ -1,41 +1,25 @@
-import 'package:charity_app/screens/Donator/donator_page.dart';
-import 'package:charity_app/screens/orphanage/orphanage_page.dart';
 import 'package:flutter/material.dart';
+import 'login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/background.dart';
 import '../../widgets/text_field.dart';
 
-Future<String?> signUp(
-  String name,
-  String phoneNumber,
-  String email,
-  String password,
-  String role,
-) async {
+/// Attempts sign-up and returns an error message string, or null on success.
+Future<String?> signUp(String name, String email, String password) async {
   try {
-    final userCredential = await FirebaseAuth.instance
+    UserCredential userCredential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
-    final uid = userCredential.user!.uid;
 
-    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .set({
       'name': name,
       'email': email,
-      'phoneNumber': phoneNumber,
-      'uid': uid,
-      'userRole': role,
     });
 
-    if (role == 'orphanage') {
-      await FirebaseFirestore.instance.collection('orphanages').doc(uid).set({
-        'name': name,
-        'orphanage_id': uid,
-        'general_funds_raised': 0,
-        'unique_donors': [],
-      });
-    }
-
-    return null;
+    return null; // success
   } on FirebaseAuthException catch (e) {
     if (e.code == 'email-already-in-use') {
       return 'An account already exists with this email.';
@@ -54,9 +38,7 @@ Future<String?> signUp(
 }
 
 class SignupPage extends StatefulWidget {
-  final String userRole;
-
-  const SignupPage({super.key, required this.userRole});
+  SignupPage({super.key});
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -64,7 +46,6 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -74,7 +55,6 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void dispose() {
     nameController.dispose();
-    phoneController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
@@ -111,7 +91,6 @@ class _SignupPageState extends State<SignupPage> {
 
   bool _validateInputs() {
     final name = nameController.text.trim();
-    final phone = phoneController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
@@ -121,6 +100,7 @@ class _SignupPageState extends State<SignupPage> {
       return false;
     }
 
+    // Name should contain only letters and spaces
     final nameRegex = RegExp(r'^[a-zA-Z\s]+$');
     if (!nameRegex.hasMatch(name)) {
       _showSnackBar('Name can only contain letters and spaces.');
@@ -132,18 +112,14 @@ class _SignupPageState extends State<SignupPage> {
       return false;
     }
 
-    if (phone.isEmpty) {
-      _showSnackBar('Please enter your phone number.');
+    if (email.isEmpty) {
+      _showSnackBar('Please enter your email address.');
       return false;
     }
 
-    if (phone.length < 8) {
-      _showSnackBar('Phone number should be at least 8 numbers.');
-      return false;
-    }
-
-    final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (email.isEmpty || !emailRegex.hasMatch(email)) {
+    // Basic email format check
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) {
       _showSnackBar('Please enter a valid email address.');
       return false;
     }
@@ -158,11 +134,13 @@ class _SignupPageState extends State<SignupPage> {
       return false;
     }
 
+    // Check for at least one uppercase letter
     if (!password.contains(RegExp(r'[A-Z]'))) {
       _showSnackBar('Password must contain at least one uppercase letter.');
       return false;
     }
 
+    // Check for at least one digit
     if (!password.contains(RegExp(r'[0-9]'))) {
       _showSnackBar('Password must contain at least one number.');
       return false;
@@ -188,13 +166,10 @@ class _SignupPageState extends State<SignupPage> {
 
     final error = await signUp(
       nameController.text.trim(),
-      phoneController.text.trim(),
       emailController.text.trim(),
       passwordController.text.trim(),
-      widget.userRole,
     );
 
-    if (!mounted) return;
     setState(() => _isLoading = false);
 
     if (error != null) {
@@ -202,18 +177,16 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    _showSnackBar('Account created successfully!', isError: false);
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted || FirebaseAuth.instance.currentUser == null) return;
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => widget.userRole == 'orphanage'
-            ? const OrphanagePage()
-            : const DonatorPage(),
-      ),
-    );
+    if (mounted && FirebaseAuth.instance.currentUser != null) {
+      _showSnackBar('Account created successfully!', isError: false);
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      }
+    }
   }
 
   @override
@@ -228,7 +201,7 @@ class _SignupPageState extends State<SignupPage> {
                 children: [
                   const SizedBox(height: 40),
                   const Text(
-                    'Create Account',
+                    "Create Account",
                     style: TextStyle(
                       fontSize: 24,
                       fontFamily: 'Roboto',
@@ -241,12 +214,6 @@ class _SignupPageState extends State<SignupPage> {
                     controller: nameController,
                     hintText: 'Full Name',
                     label: 'Full Name',
-                  ),
-                  const SizedBox(height: 30),
-                  AppTextField(
-                    controller: phoneController,
-                    hintText: 'Phone number',
-                    label: 'Phone number',
                   ),
                   const SizedBox(height: 30),
                   AppTextField(
@@ -290,11 +257,9 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             )
                           : const Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
+                              "Sign Up",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
                             ),
                     ),
                   ),
@@ -302,13 +267,13 @@ class _SignupPageState extends State<SignupPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Already have an account? '),
+                      const Text("Already have an account? "),
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          'Login',
+                          "Login",
                           style: TextStyle(
                             color: Colors.orangeAccent,
                             fontWeight: FontWeight.bold,
