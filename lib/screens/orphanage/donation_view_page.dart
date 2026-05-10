@@ -55,7 +55,7 @@ class _DonationViewPageState extends State<DonationViewPage> {
                             Text(
                               'Total Donors',
                               style: GoogleFonts.inter(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 16,
                               ),
                             ),
@@ -149,7 +149,7 @@ class _DonationViewPageState extends State<DonationViewPage> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -276,7 +276,9 @@ class _DonationViewPageState extends State<DonationViewPage> {
   ) {
     // Math and Logic
     double percent = raised / goal;
-    if (percent > 1.0) percent = 1.0; // Caps progress bar at 100%
+    if (percent > 1.0) {
+      percent = 1.0;
+    }
 
     bool isFinished = (raised >= goal) || (status != 'active');
 

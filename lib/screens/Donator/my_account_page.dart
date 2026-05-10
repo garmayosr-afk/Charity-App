@@ -91,7 +91,7 @@ class _MyaccountPageState extends State<MyaccountPage> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const UserPage()),
-            (route) => false,
+        (route) => false,
       );
     }
   }
@@ -118,146 +118,161 @@ class _MyaccountPageState extends State<MyaccountPage> {
       ),
       body: Background(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.orange))
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.orange),
+              )
             : SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-
-
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF9A3C), Color(0xFFFF6F00)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.orange.withOpacity(0.35),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
                 ),
-                child: Center(
-                  child: Text(
-                    _getInitials(_name),
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
 
-              const SizedBox(height: 16),
-
-              Text(
-                _name.isNotEmpty ? _name : 'User',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D2D2D),
-                ),
-              ),
-
-              const SizedBox(height: 4),
-
-
-              Text(
-                _email,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Account Information',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D2D2D),
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF9A3C), Color(0xFFFF6F00)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.orange.withValues(alpha: 0.35),
+                            blurRadius: 18,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          _getInitials(_name),
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow(Icons.person_outline, 'Full Name', _name.isNotEmpty ? _name : 'N/A'),
-                      const Divider(height: 24),
-                      _buildInfoRow(Icons.email_outlined, 'Email', _email.isNotEmpty ? _email : 'N/A'),
-                      const Divider(height: 24),
-                      _buildInfoRow(Icons.fingerprint, 'User ID', _uid.isNotEmpty ? '${_uid.substring(0, _uid.length > 12 ? 12 : _uid.length)}...' : 'N/A'),
-                    ],
-                  ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Text(
+                      _name.isNotEmpty ? _name : 'User',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D2D2D),
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      _email,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Account Information',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF2D2D2D),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildInfoRow(
+                              Icons.person_outline,
+                              'Full Name',
+                              _name.isNotEmpty ? _name : 'N/A',
+                            ),
+                            const Divider(height: 24),
+                            _buildInfoRow(
+                              Icons.email_outlined,
+                              'Email',
+                              _email.isNotEmpty ? _email : 'N/A',
+                            ),
+                            const Divider(height: 24),
+                            _buildInfoRow(
+                              Icons.fingerprint,
+                              'User ID',
+                              _uid.isNotEmpty
+                                  ? '${_uid.substring(0, _uid.length > 12 ? 12 : _uid.length)}...'
+                                  : 'N/A',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: _isLoggingOut ? null : _handleLogout,
+                        icon: _isLoggingOut
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.logout, color: Colors.white),
+                        label: Text(
+                          _isLoggingOut ? 'Logging out...' : 'Log Out',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.shade400,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: 40),
-
-              
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoggingOut ? null : _handleLogout,
-                  icon: _isLoggingOut
-                      ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: Colors.white,
-                    ),
-                  )
-                      : const Icon(Icons.logout, color: Colors.white),
-                  label: Text(
-                    _isLoggingOut ? 'Logging out...' : 'Log Out',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade400,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 30),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -268,7 +283,7 @@ class _MyaccountPageState extends State<MyaccountPage> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: Colors.orange, size: 20),

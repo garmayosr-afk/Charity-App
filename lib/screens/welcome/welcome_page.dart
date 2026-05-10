@@ -18,16 +18,15 @@ class WelcomePage extends StatelessWidget {
                 Align(
                   alignment: Alignment.topRight,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 6,
-                        )
+                        BoxShadow(color: Colors.black12, blurRadius: 6),
                       ],
                     ),
                     child: DropdownButton<String>(
@@ -54,10 +53,7 @@ class WelcomePage extends StatelessWidget {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFFF9800),
-                        Color(0xFFFFB300),
-                      ],
+                      colors: [Color(0xFFFF9800), Color(0xFFFFB300)],
                     ),
                   ),
                   child: const Icon(
@@ -91,31 +87,32 @@ class WelcomePage extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFFFF6A00),
-                        Color(0xFFFFA000),
-                      ],
+                      colors: [Color(0xFFFF6A00), Color(0xFFFFA000)],
                     ),
                     boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 8,
                         offset: Offset(0, 4),
-                      )
+                      ),
                     ],
                   ),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const UserPage()),
+                        MaterialPageRoute(
+                          builder: (context) => const UserPage(),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 14),
+                        horizontal: 40,
+                        vertical: 14,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -125,13 +122,10 @@ class WelcomePage extends StatelessWidget {
                       children: [
                         Text(
                           "Start donating",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                         SizedBox(width: 8),
-                        Icon(Icons.arrow_forward, color: Colors.white)
+                        Icon(Icons.arrow_forward, color: Colors.white),
                       ],
                     ),
                   ),
@@ -165,4 +159,3 @@ class WelcomePage extends StatelessWidget {
     );
   }
 }
-

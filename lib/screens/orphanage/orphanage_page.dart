@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'CreateCampaignPage.dart';
-import 'DonationView_Page.dart';
-import 'AllDonationsHistoryPage.dart';
+import 'all_donations_history_page.dart';
+import 'create_campaign_page.dart';
+import 'donation_view_page.dart';
 
 class OrphanagePage extends StatefulWidget {
   const OrphanagePage({super.key});
@@ -171,7 +171,7 @@ class _OrphanagePageState extends State<OrphanagePage> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.orange.withOpacity(0.3),
+                                color: Colors.orange.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -218,7 +218,7 @@ class _OrphanagePageState extends State<OrphanagePage> {
                       Text(
                         'Total Annual Donations',
                         style: GoogleFonts.inter(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 14,
                         ),
                       ),

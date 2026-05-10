@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
-  final VoidCallback? onPressed; //A function that runs when the button is clicked
-  final bool isLoading;  //A boolean that indicates whether the button is loading
+  final VoidCallback?
+  onPressed; //A function that runs when the button is clicked
+  final bool isLoading; //A boolean that indicates whether the button is loading
   final Color backgroundColor;
   final double height;
 
   const AppButton({
-    super.key,  //Passes the key to the parent class (StatelessWidget)
+    super.key, //Passes the key to the parent class (StatelessWidget)
     required this.text, //You must provide text when using this button
     required this.onPressed,
     this.isLoading = false,
@@ -32,17 +33,17 @@ class AppButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         child: isLoading
             ? const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(
-            color: Colors.white,
-            strokeWidth: 2,
-          ),
-        )
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
             : Text(
-          text,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-        ),
+                text,
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+              ),
       ),
     );
   }

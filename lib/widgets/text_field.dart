@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-
 class AppTextField extends StatelessWidget {
-  final TextEditingController? controller; // Controller to read/write the text value
+  final TextEditingController?
+  controller; // Controller to read/write the text value
   final String hintText;
   final bool obscureText;
   final String? label;
-  final Widget? prefixIcon;  // icon on the left side (like a search icon)
+  final Widget? prefixIcon; // icon on the left side (like a search icon)
 
   // Called whenever the text changes
   final ValueChanged<String>? onChanged;
@@ -26,14 +26,11 @@ class AppTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-          Text(
-            label!,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
+        Text(
+          label!,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
 
         TextField(
           controller: controller,
@@ -47,9 +44,7 @@ class AppTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: prefixIcon,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: Colors.orangeAccent),

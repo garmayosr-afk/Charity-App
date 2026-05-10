@@ -6,7 +6,11 @@ import '../../widgets/text_field.dart';
 import 'payementmethode_page.dart';
 
 Future<void> savePaymentDetails(
-    String name, String companyName, String phoneNumber, String email) async {
+  String name,
+  String companyName,
+  String phoneNumber,
+  String email,
+) async {
   final user = FirebaseAuth.instance.currentUser;
 
   await FirebaseFirestore.instance.collection('payements').add({
@@ -20,7 +24,9 @@ Future<void> savePaymentDetails(
 }
 
 class InformationsPage extends StatefulWidget {
-  const InformationsPage({super.key});
+  final int amount;
+
+  const InformationsPage({super.key, required this.amount});
 
   @override
   State<InformationsPage> createState() => _InformationsPageState();
@@ -103,15 +109,18 @@ class _InformationsPageState extends State<InformationsPage> {
                           phonenumberController.text.trim(),
                           emailController.text.trim(),
                         );
-                        if (mounted &&
-                            FirebaseAuth.instance.currentUser != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const PayementMethodPage()),
-                          );
+                        if (!context.mounted ||
+                            FirebaseAuth.instance.currentUser == null) {
+                          return;
                         }
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PayementMethodPage(amount: widget.amount),
+                          ),
+                        );
                       },
                       child: const Text(
                         "Continue Payment",

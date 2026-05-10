@@ -2,13 +2,11 @@ import 'package:charity_app/screens/Donator/donation_history_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Donator/donation_page.dart';
-import '../Donator/adress_page.dart';
 import '../Donator/about_us.dart';
 import '../Donator/my_account_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../Donator/DonationView_Page.dart';
-import '../Donator/donation_page.dart';
+import '../Donator/donation_view_page.dart';
 
 class DonatorPage extends StatefulWidget {
   const DonatorPage({super.key});
@@ -106,7 +104,7 @@ class _DonatorPageState extends State<DonatorPage> {
                     ],
                   ),
                   CircleAvatar(
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
                     radius: 20,
                     child: Text(
                       'Y',
@@ -228,7 +226,7 @@ class _DonatorPageState extends State<DonatorPage> {
           border: Border.all(color: Colors.orange.shade100, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -342,8 +340,12 @@ class _DonatorPageState extends State<DonatorPage> {
 
                   // Calculate percentage for the progress bar
                   double percent = raised / goal;
-                  if (percent > 1.0) percent = 1.0;
-                  if (percent.isNaN || percent.isInfinite) percent = 0.0;
+                  if (percent > 1.0) {
+                    percent = 1.0;
+                  }
+                  if (percent.isNaN || percent.isInfinite) {
+                    percent = 0.0;
+                  }
 
                   return _buildUrgentCard(
                     title: title,
@@ -716,7 +718,7 @@ class _DonatorPageState extends State<DonatorPage> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -767,7 +769,9 @@ class _DonatorPageState extends State<DonatorPage> {
           } else if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const DonationHisoryPage()),
+              MaterialPageRoute(
+                builder: (context) => const DonationHisoryPage(),
+              ),
             );
           } else if (index == 3) {
             Navigator.push(
@@ -788,7 +792,9 @@ class _DonatorPageState extends State<DonatorPage> {
         children: [
           Icon(
             icon,
-            color: isSelected ? Colors.orange : iconColor.withOpacity(0.6),
+            color: isSelected
+                ? Colors.orange
+                : iconColor.withValues(alpha: 0.6),
             size: 28,
           ),
           const SizedBox(height: 4),

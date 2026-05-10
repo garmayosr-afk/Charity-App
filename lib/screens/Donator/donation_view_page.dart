@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class DonationViewPage extends StatefulWidget {
   const DonationViewPage({super.key});
 
@@ -18,7 +19,8 @@ class _DonationViewPageState extends State<DonationViewPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context), // This returns you to the previous page
+          onPressed: () =>
+              Navigator.pop(context), // This returns you to the previous page
         ),
       ),
       body: SafeArea(
@@ -28,7 +30,6 @@ class _DonationViewPageState extends State<DonationViewPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-  
                 const SizedBox(height: 24),
 
                 // 2. BOTTOM CONTAINER (Urgent Needs / Campaigns)
@@ -38,7 +39,7 @@ class _DonationViewPageState extends State<DonationViewPage> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -64,24 +65,35 @@ class _DonationViewPageState extends State<DonationViewPage> {
 
                         // LIVE STREAMBUILDER (Shows ALL campaigns)
                         StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('campaigns').snapshots(),
+                          stream: FirebaseFirestore.instance
+                              .collection('campaigns')
+                              .snapshots(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return const Center(
                                 child: Padding(
                                   padding: EdgeInsets.all(20.0),
-                                  child: CircularProgressIndicator(color: Colors.orange),
+                                  child: CircularProgressIndicator(
+                                    color: Colors.orange,
+                                  ),
                                 ),
                               );
                             }
 
-                            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                            if (!snapshot.hasData ||
+                                snapshot.data!.docs.isEmpty) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
                                 child: Center(
                                   child: Text(
                                     "No urgent needs at the moment.",
-                                    style: GoogleFonts.inter(color: Colors.grey, fontSize: 15),
+                                    style: GoogleFonts.inter(
+                                      color: Colors.grey,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
                               );
@@ -94,17 +106,28 @@ class _DonationViewPageState extends State<DonationViewPage> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: campaigns.length,
                               itemBuilder: (context, index) {
-                                final data = campaigns[index].data() as Map<String, dynamic>;
+                                final data =
+                                    campaigns[index].data()
+                                        as Map<String, dynamic>;
 
-                                final String title = data['name'] ?? 'Unnamed Campaign';
-                                final String description = data['description'] ?? 'No description provided';
-                                final double goal = (data['goal_amount'] ?? 1).toDouble();
-                                final double raised = (data['raised_amount'] ?? 0).toDouble();
+                                final String title =
+                                    data['name'] ?? 'Unnamed Campaign';
+                                final String description =
+                                    data['description'] ??
+                                    'No description provided';
+                                final double goal = (data['goal_amount'] ?? 1)
+                                    .toDouble();
+                                final double raised =
+                                    (data['raised_amount'] ?? 0).toDouble();
 
                                 // Calculate percentage
                                 double percent = raised / goal;
-                                if (percent > 1.0) percent = 1.0;
-                                if (percent.isNaN || percent.isInfinite) percent = 0.0;
+                                if (percent > 1.0) {
+                                  percent = 1.0;
+                                }
+                                if (percent.isNaN || percent.isInfinite) {
+                                  percent = 0.0;
+                                }
 
                                 return _buildUrgentCard(
                                   title: title,
@@ -157,27 +180,36 @@ class _DonationViewPageState extends State<DonationViewPage> {
                   debugPrint("Donate clicked for $title");
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.orange),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'Donate', 
-                    style: GoogleFonts.inter(color: Colors.orange, fontWeight: FontWeight.bold)
+                    'Donate',
+                    style: GoogleFonts.inter(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
-              
+
               // Progress Bar with Percentage
               SizedBox(
                 width: 100,
                 child: Row(
                   children: [
                     Text(
-                      '${(percent * 100).toInt()}%', 
-                      style: GoogleFonts.inter(fontSize: 10, color: Colors.grey)
+                      '${(percent * 100).toInt()}%',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
                     ),
                     const SizedBox(width: 4),
                     Expanded(
@@ -201,21 +233,30 @@ class _DonationViewPageState extends State<DonationViewPage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  title, 
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14),
+                  title,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                   textAlign: TextAlign.right,
                 ),
                 Text(
-                  description, 
-                  style: GoogleFonts.inter(color: Colors.grey.shade600, fontSize: 12),
+                  description,
+                  style: GoogleFonts.inter(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                  ),
                   textAlign: TextAlign.right,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  goal, 
-                  style: GoogleFonts.inter(color: Colors.grey.shade500, fontSize: 10),
+                  goal,
+                  style: GoogleFonts.inter(
+                    color: Colors.grey.shade500,
+                    fontSize: 10,
+                  ),
                   textAlign: TextAlign.right,
                 ),
               ],

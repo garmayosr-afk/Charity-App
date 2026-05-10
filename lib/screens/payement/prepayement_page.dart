@@ -192,18 +192,15 @@ class _PrepayementPageState extends State<PrepayementPage> {
                         fillColor: Colors.grey.shade50,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                          BorderSide(color: Colors.grey.shade200),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                          BorderSide(color: Colors.grey.shade200),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                          const BorderSide(color: Colors.orange),
+                          borderSide: const BorderSide(color: Colors.orange),
                         ),
                       ),
                       onChanged: (value) {
@@ -229,10 +226,27 @@ class _PrepayementPageState extends State<PrepayementPage> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
+                          final customAmount = int.tryParse(
+                            _customAmountController.text.trim(),
+                          );
+                          final amount = customAmount ?? _selectedAmount;
+
+                          if (amount == null || amount <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please select a donation amount.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const InformationsPage(),
+                              builder: (context) =>
+                                  InformationsPage(amount: amount),
                             ),
                           );
                         },

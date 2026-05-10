@@ -54,7 +54,10 @@ class DonationHisoryPage extends StatelessWidget {
                   return Center(
                     child: Text(
                       "No donation history yet.",
-                      style: GoogleFonts.inter(color: Colors.grey, fontSize: 16),
+                      style: GoogleFonts.inter(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
                     ),
                   );
                 }
@@ -65,7 +68,8 @@ class DonationHisoryPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   itemCount: donations.length,
                   itemBuilder: (context, index) {
-                    final data = donations[index].data() as Map<String, dynamic>;
+                    final data =
+                        donations[index].data() as Map<String, dynamic>;
 
                     // 1. Amount
                     final double amount = (data['amount'] ?? 0).toDouble();
@@ -78,10 +82,14 @@ class DonationHisoryPage extends StatelessWidget {
                     }
 
                     // 3. Name Trick Logic
-                    String campaignId = data['campaign_id']?.toString().trim() ?? '';
-                    String orphanageId = data['orphanage_id']?.toString().trim() ?? '';
+                    String campaignId =
+                        data['campaign_id']?.toString().trim() ?? '';
+                    String orphanageId =
+                        data['orphanage_id']?.toString().trim() ?? '';
 
-                    String nameToDisplay = campaignId.isNotEmpty ? campaignId : orphanageId;
+                    String nameToDisplay = campaignId.isNotEmpty
+                        ? campaignId
+                        : orphanageId;
 
                     return _buildHistoryCard(
                       '+${amount.toInt()} TND',
@@ -123,7 +131,11 @@ class DonationHisoryPage extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Icon(Icons.check, color: Color(0xFF81C784), size: 14), // Light green
+                  const Icon(
+                    Icons.check,
+                    color: Color(0xFF81C784),
+                    size: 14,
+                  ), // Light green
                   const SizedBox(width: 4),
                   Text(
                     'Confirmé',

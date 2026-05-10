@@ -3,18 +3,15 @@ import '../../widgets/background.dart';
 import '../../widgets/card.dart';
 import 'payment_page.dart';
 
-
-
 class PayementMethodPage extends StatelessWidget {
-  const PayementMethodPage({super.key});
+  final int amount;
+
+  const PayementMethodPage({super.key, required this.amount});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Payment Method"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Payment Method"), centerTitle: true),
       body: Background(
         child: SafeArea(
           child: Padding(
@@ -32,9 +29,14 @@ class PayementMethodPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) {
-                          return const PaymentPage(paymentMethod: "postal");
-                        }),
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return PaymentPage(
+                              paymentMethod: "postal",
+                              amount: amount,
+                            );
+                          },
+                        ),
                       );
                     },
                   ),
@@ -48,9 +50,14 @@ class PayementMethodPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) {
-                          return const PaymentPage(paymentMethod: "bank");
-                        }),
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return PaymentPage(
+                              paymentMethod: "bank",
+                              amount: amount,
+                            );
+                          },
+                        ),
                       );
                     },
                   ),

@@ -12,11 +12,11 @@ import 'package:flutter/material.dart';
 import 'button.dart';
 
 class RoleCard extends StatelessWidget {
-  final IconData icon;       // The icon shown in the circle
-  final Color color;         // Color for the icon circle, title, and button
-  final String title;        // Card title
-  final String description;  // Card description text
-  final String buttonText;   // Text on the button
+  final IconData icon; // The icon shown in the circle
+  final Color color; // Color for the icon circle, title, and button
+  final String title; // Card title
+  final String description; // Card description text
+  final String buttonText; // Text on the button
   final VoidCallback onPressed; // What happens when the button is tapped
 
   const RoleCard({

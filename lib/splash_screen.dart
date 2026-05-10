@@ -72,9 +72,10 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 900),
     );
     _fadeIn = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
-    _slideUp = Tween<double>(begin: 28, end: 0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
-    );
+    _slideUp = Tween<double>(
+      begin: 28,
+      end: 0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) _fadeController.forward();
     });
@@ -92,6 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) _progressController.forward();
     });
     Future.delayed(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const WelcomePage()),
@@ -109,15 +111,15 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   // ── Star positions: [leftRatio, topRatio, starSize, phaseOffset] ──
-  static const _starData = [
+  static const List<List<double>> _starData = [
     [0.10, 0.10, 14.0, 0.00],
     [0.82, 0.14, 10.0, 0.30],
-    [0.88, 0.36, 8.0,  0.60],
-    [0.07, 0.42, 9.0,  0.20],
-    [0.76, 0.52, 7.0,  0.80],
-    [0.18, 0.66, 6.0,  0.50],
+    [0.88, 0.36, 8.0, 0.60],
+    [0.07, 0.42, 9.0, 0.20],
+    [0.76, 0.52, 7.0, 0.80],
+    [0.18, 0.66, 6.0, 0.50],
     [0.91, 0.70, 11.0, 0.10],
-    [0.04, 0.78, 8.0,  0.70],
+    [0.04, 0.78, 8.0, 0.70],
   ];
 
   @override
@@ -141,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFFF6B35).withOpacity(0.14),
+                      color: const Color(0xFFFF6B35).withValues(alpha: 0.14),
                       blurRadius: 130,
                       spreadRadius: 70,
                     ),
@@ -154,15 +156,14 @@ class _SplashScreenState extends State<SplashScreen>
           // ── Twinkling stars ──
           for (final s in _starData)
             Positioned(
-              left: screenSize.width * (s[0]),
-              top: screenSize.height * (s[1]),
+              left: screenSize.width * s[0],
+              top: screenSize.height * s[1],
               child: AnimatedBuilder(
                 animation: _starController,
                 builder: (context, _) {
-                  final phase =
-                      (_starController.value + (s[3])) % 1.0;
-                  final opacity =
-                  (0.15 + 0.85 * math.sin(phase * math.pi)).clamp(0.0, 1.0);
+                  final phase = (_starController.value + s[3]) % 1.0;
+                  final opacity = (0.15 + 0.85 * math.sin(phase * math.pi))
+                      .clamp(0.0, 1.0);
                   return Opacity(
                     opacity: opacity,
                     child: _SparkleWidget(size: s[2]),
@@ -217,7 +218,7 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 3,
                       margin: const EdgeInsets.only(top: 2, bottom: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF6B35).withOpacity(0.50),
+                        color: const Color(0xFFFF6B35).withValues(alpha: 0.50),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -240,14 +241,15 @@ class _SplashScreenState extends State<SplashScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
                         3,
-                            (i) => Container(
+                        (i) => Container(
                           width: 6,
                           height: 6,
                           margin: const EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFFFF6B35)
-                                .withOpacity(i == 1 ? 0.9 : 0.45),
+                            color: const Color(
+                              0xFFFF6B35,
+                            ).withValues(alpha: i == 1 ? 0.9 : 0.45),
                           ),
                         ),
                       ),
@@ -275,44 +277,45 @@ class _SplashScreenState extends State<SplashScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 130),
                 child: Column(
                   children: [
-                  AnimatedBuilder(
-                  animation: _progressController,
-                  builder: (context, _) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Stack(
-                        children: [
-                          // Track
-                          Container(
-                            height: 4,
-                            color: const Color(0xFF1E2D3D),
-                          ),
-                          // Fill
-                          FractionallySizedBox(
-                            widthFactor: _progress.value,
-                            child: Container(
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFF6B35)
-                                    .withOpacity(0.85),
-                                borderRadius: BorderRadius.circular(4),
+                    AnimatedBuilder(
+                      animation: _progressController,
+                      builder: (context, _) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Stack(
+                            children: [
+                              // Track
+                              Container(
+                                height: 4,
+                                color: const Color(0xFF1E2D3D),
                               ),
-                            ),
+                              // Fill
+                              FractionallySizedBox(
+                                widthFactor: _progress.value,
+                                child: Container(
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFFFF6B35,
+                                    ).withValues(alpha: 0.85),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20) ,
-                  const Text(
-                    'Chargement...',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFF445566),
-                      letterSpacing: 0.5,
+                        );
+                      },
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Chargement...',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF445566),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -389,16 +392,26 @@ class _HeartChildPainter extends CustomPainter {
     final cy = size.height / 2 + 8;
 
     // Outer heart
-    _drawHeart(canvas, cx, cy, size.width * 0.92,
-        const Color(0xFFFF6B35).withOpacity(0.93));
+    _drawHeart(
+      canvas,
+      cx,
+      cy,
+      size.width * 0.92,
+      const Color(0xFFFF6B35).withValues(alpha: 0.93),
+    );
 
     // Inner glowing heart
-    _drawHeart(canvas, cx, cy, size.width * 0.58,
-        const Color(0xFFFF8C42).withOpacity(0.52));
+    _drawHeart(
+      canvas,
+      cx,
+      cy,
+      size.width * 0.58,
+      const Color(0xFFFF8C42).withValues(alpha: 0.52),
+    );
 
     // ── Child silhouette ──
     final white = Paint()
-      ..color = Colors.white.withOpacity(0.90)
+      ..color = Colors.white.withValues(alpha: 0.90)
       ..style = PaintingStyle.fill;
 
     // Head
@@ -409,17 +422,17 @@ class _HeartChildPainter extends CustomPainter {
       ..moveTo(cx - 13, cy - 7)
       ..lineTo(cx + 13, cy - 7)
       ..lineTo(cx + 11, cy + 32)
-      ..lineTo(cx + 5,  cy + 32)
-      ..lineTo(cx + 5,  cy + 18)
-      ..lineTo(cx - 5,  cy + 18)
-      ..lineTo(cx - 5,  cy + 32)
+      ..lineTo(cx + 5, cy + 32)
+      ..lineTo(cx + 5, cy + 18)
+      ..lineTo(cx - 5, cy + 18)
+      ..lineTo(cx - 5, cy + 32)
       ..lineTo(cx - 11, cy + 32)
       ..close();
     canvas.drawPath(body, white);
 
     // Left arm
     final lArm = Paint()
-      ..color = Colors.white.withOpacity(0.85)
+      ..color = Colors.white.withValues(alpha: 0.85)
       ..style = PaintingStyle.fill;
     final leftArm = Path()
       ..moveTo(cx - 13, cy - 6)
@@ -440,7 +453,12 @@ class _HeartChildPainter extends CustomPainter {
   }
 
   void _drawHeart(
-      Canvas canvas, double cx, double cy, double width, Color color) {
+    Canvas canvas,
+    double cx,
+    double cy,
+    double width,
+    Color color,
+  ) {
     final h = width * 0.88;
     final paint = Paint()
       ..color = color
@@ -450,25 +468,37 @@ class _HeartChildPainter extends CustomPainter {
     path.moveTo(cx, cy + h * 0.40);
     // Left lobe
     path.cubicTo(
-      cx - width * 0.05, cy + h * 0.18,
-      cx - width * 0.52, cy + h * 0.08,
-      cx - width * 0.50, cy - h * 0.18,
+      cx - width * 0.05,
+      cy + h * 0.18,
+      cx - width * 0.52,
+      cy + h * 0.08,
+      cx - width * 0.50,
+      cy - h * 0.18,
     );
     path.cubicTo(
-      cx - width * 0.48, cy - h * 0.50,
-      cx - width * 0.04, cy - h * 0.50,
-      cx, cy - h * 0.14,
+      cx - width * 0.48,
+      cy - h * 0.50,
+      cx - width * 0.04,
+      cy - h * 0.50,
+      cx,
+      cy - h * 0.14,
     );
     // Right lobe
     path.cubicTo(
-      cx + width * 0.04, cy - h * 0.50,
-      cx + width * 0.48, cy - h * 0.50,
-      cx + width * 0.50, cy - h * 0.18,
+      cx + width * 0.04,
+      cy - h * 0.50,
+      cx + width * 0.48,
+      cy - h * 0.50,
+      cx + width * 0.50,
+      cy - h * 0.18,
     );
     path.cubicTo(
-      cx + width * 0.52, cy + h * 0.08,
-      cx + width * 0.05, cy + h * 0.18,
-      cx, cy + h * 0.40,
+      cx + width * 0.52,
+      cy + h * 0.08,
+      cx + width * 0.05,
+      cy + h * 0.18,
+      cx,
+      cy + h * 0.40,
     );
     path.close();
     canvas.drawPath(path, paint);
