@@ -11,6 +11,9 @@ class AppTextField extends StatelessWidget {
   // Called whenever the text changes
   final ValueChanged<String>? onChanged;
 
+  // Validator for form validation
+  final String? Function(String?)? validator;
+
   const AppTextField({
     super.key,
     this.controller,
@@ -19,6 +22,7 @@ class AppTextField extends StatelessWidget {
     this.label,
     this.prefixIcon,
     this.onChanged,
+    this.validator,
   });
 
   @override
@@ -35,10 +39,11 @@ class AppTextField extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-        TextField(
+        TextFormField(
           controller: controller,
           obscureText: obscureText,
           onChanged: onChanged,
+          validator: validator,
           style: const TextStyle(
             fontSize: 18,
             fontFamily: 'Roboto',

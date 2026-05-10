@@ -32,7 +32,7 @@ class _DonatorPageState extends State<DonatorPage> {
           if (index == 0) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => const MyaccountPage()));
           } else if (index == 3) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const DonationPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => DonationPage(orphanageId: selectedOrphanageId)));
           } else if (index == 1) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => const DonationhistoryPage()));
           } else if (index == 4) {
@@ -175,7 +175,7 @@ class _DonatorPageState extends State<DonatorPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => const DonationPage()),
+                                          builder: (context) => DonationPage(orphanageId: selectedOrphanageId)),
                                     );
                                   },
                                   child: Text(data['title']),

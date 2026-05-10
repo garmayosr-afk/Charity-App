@@ -7,7 +7,9 @@ import 'adress_page.dart';
 
 
 class DonationPage extends StatelessWidget {
-  const DonationPage({super.key});
+  final String? orphanageId;
+
+  const DonationPage({super.key, this.orphanageId});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class DonationPage extends StatelessWidget {
                     buttonText: "Donate Money",
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                       builder: (context) => const PrepayementPage(),
+                       builder: (context) => PrepayementPage(orphanageId: orphanageId),
                       ),
                       );
                     },

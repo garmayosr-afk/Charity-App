@@ -3,7 +3,9 @@ import '../../widgets/background.dart';
 import 'personalinfo_page.dart';
 
 class PrepayementPage extends StatefulWidget {
-  const PrepayementPage({super.key});
+  final String? orphanageId;
+
+  const PrepayementPage({super.key, this.orphanageId});
 
   @override
   State<PrepayementPage> createState() => _PrepayementPageState();
@@ -229,10 +231,20 @@ class _PrepayementPageState extends State<PrepayementPage> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
+                          int amount = _selectedAmount ?? int.tryParse(_customAmountController.text) ?? 0;
+                          if (amount <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Please select or enter a valid amount")),
+                            );
+                            return;
+                          }
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const InformationsPage(),
+                              builder: (context) => InformationsPage(
+                                amount: amount,
+                                orphanageId: widget.orphanageId,
+                              ),
                             ),
                           );
                         },
