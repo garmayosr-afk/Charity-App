@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class DonationHisoryPage extends StatelessWidget {
-  const DonationHisoryPage({super.key});
+class DonationHistoryPage extends StatelessWidget {
+  const DonationHistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {

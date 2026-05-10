@@ -3,7 +3,9 @@ import '../../widgets/background.dart';
 import 'personalinfo_page.dart';
 
 class PrepayementPage extends StatefulWidget {
-  const PrepayementPage({super.key});
+  final String? orphanageId;
+
+  const PrepayementPage({super.key, this.orphanageId});
 
   @override
   State<PrepayementPage> createState() => _PrepayementPageState();

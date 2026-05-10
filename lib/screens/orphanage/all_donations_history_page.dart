@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,8 +7,7 @@ class AllDonationsHistoryPage extends StatefulWidget {
   const AllDonationsHistoryPage({super.key});
 
   @override
-  State<AllDonationsHistoryPage> createState() =>
-      _AllDonationsHistoryPageState();
+  State<AllDonationsHistoryPage> createState() => _AllDonationsHistoryPageState();
 }
 
 class _AllDonationsHistoryPageState extends State<AllDonationsHistoryPage> {
@@ -25,13 +24,7 @@ class _AllDonationsHistoryPageState extends State<AllDonationsHistoryPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Donations History',
-          style: GoogleFonts.cairo(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text('Donations History', style: GoogleFonts.cairo(color: Colors.black, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -46,9 +39,7 @@ class _AllDonationsHistoryPageState extends State<AllDonationsHistoryPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Text("No donations found.", style: GoogleFonts.inter()),
-            );
+            return Center(child: Text("No donations found.", style: GoogleFonts.inter()));
           }
 
           final donations = snapshot.data!.docs;
@@ -60,32 +51,24 @@ class _AllDonationsHistoryPageState extends State<AllDonationsHistoryPage> {
               final data = donations[index].data() as Map<String, dynamic>;
               final String donorId = data['donor_id'] ?? '';
               final double amount = (data['amount'] ?? 0).toDouble();
-
+              
               String dateString = 'Recent';
               if (data['date'] != null) {
                 DateTime date = (data['date'] as Timestamp).toDate();
-                dateString = "${date.day}/${date.month}/${date.year}";
+                dateString = "${date.day}/${date.month}/${date.year}"; 
               }
 
               // Fetch User Name for each card
               return FutureBuilder<DocumentSnapshot>(
-                future: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(donorId)
-                    .get(),
+                future: FirebaseFirestore.instance.collection('users').doc(donorId).get(),
                 builder: (context, userSnapshot) {
                   String donorName = 'Anonymous';
                   if (userSnapshot.hasData && userSnapshot.data!.exists) {
-                    final userData =
-                        userSnapshot.data!.data() as Map<String, dynamic>;
+                    final userData = userSnapshot.data!.data() as Map<String, dynamic>;
                     donorName = userData['name'] ?? 'Anonymous';
                   }
 
-                  return _buildHistoryCard(
-                    '+${amount.toInt()} TND',
-                    donorName,
-                    dateString,
-                  );
+                  return _buildHistoryCard('+${amount.toInt()} TND', donorName, dateString);
                 },
               );
             },
@@ -111,22 +94,12 @@ class _AllDonationsHistoryPageState extends State<AllDonationsHistoryPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                amount,
-                style: GoogleFonts.inter(
-                  color: const Color(0xFFD32F2F),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
+              Text(amount, style: GoogleFonts.inter(color: const Color(0xFFD32F2F), fontWeight: FontWeight.bold, fontSize: 16)),
               Row(
                 children: [
                   const Icon(Icons.check, color: Colors.green, size: 12),
                   const SizedBox(width: 4),
-                  Text(
-                    'Confirmé',
-                    style: GoogleFonts.inter(color: Colors.green, fontSize: 10),
-                  ),
+                  Text('Confirmé', style: GoogleFonts.inter(color: Colors.green, fontSize: 10)),
                 ],
               ),
             ],
@@ -136,34 +109,15 @@ class _AllDonationsHistoryPageState extends State<AllDonationsHistoryPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    name,
-                    style: GoogleFonts.cairo(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    date,
-                    style: GoogleFonts.inter(
-                      color: Colors.grey.shade500,
-                      fontSize: 11,
-                    ),
-                  ),
+                  Text(name, style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(date, style: GoogleFonts.inter(color: Colors.grey.shade500, fontSize: 11)),
                 ],
               ),
               const SizedBox(width: 12),
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFDECDA),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.favorite,
-                  color: Colors.orange,
-                  size: 16,
-                ),
+                decoration: const BoxDecoration(color: Color(0xFFFDECDA), shape: BoxShape.circle),
+                child: const Icon(Icons.favorite, color: Colors.orange, size: 16),
               ),
             ],
           ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../auth/login_page.dart';
 import '../../widgets/background.dart';
 import '../../widgets/card.dart';
@@ -9,7 +9,10 @@ class UserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Select Your Role"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Select Your Role"),
+        centerTitle: true,
+      ),
       body: Background(
         child: SafeArea(
           child: Padding(
@@ -38,11 +41,9 @@ class UserPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return const LoginPage(userRole: 'donor');
-                          },
-                        ),
+                        MaterialPageRoute(builder: (context) {
+                          return const LoginPage(userRole: 'donor');
+                        }),
                       );
                     },
                   ),
@@ -57,11 +58,9 @@ class UserPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return const LoginPage(userRole: 'orphanage');
-                          },
-                        ),
+                        MaterialPageRoute(builder: (context) {
+                          return const LoginPage(userRole: 'orphanage');
+                        }),
                       );
                     },
                   ),

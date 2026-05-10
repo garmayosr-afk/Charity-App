@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../payement/prepayement_page.dart';
 import '../../widgets/card.dart';
-import 'adress_page.dart';
-
 
 class DonationPage extends StatelessWidget {
   final String? orphanageId;
@@ -41,13 +39,15 @@ class DonationPage extends StatelessWidget {
                     icon: Icons.attach_money,
                     color: Colors.orangeAccent,
                     title: "Money Donation ",
-                    description:
-                    "Donate Money Directly",
+                    description: "Donate Money Directly",
                     buttonText: "Donate Money",
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
-                       builder: (context) => PrepayementPage(orphanageId: orphanageId),
-                      ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PrepayementPage(orphanageId: orphanageId),
+                        ),
                       );
                     },
                   ),
@@ -58,12 +58,15 @@ class DonationPage extends StatelessWidget {
                     color: Colors.orangeAccent,
                     title: "Other Donations ",
                     description:
-                    "Donate new or gently used clothing, Food And School Materials for children of all ages",
+                        "Donate new or gently used clothing, Food And School Materials for children of all ages",
                     buttonText: "Donate now",
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => const AdressePage(),
-                      ));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AdressePage(),
+                        ),
+                      );
                     },
                   ),
 

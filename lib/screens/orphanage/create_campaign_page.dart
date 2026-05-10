@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +14,7 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
-
+  
   bool _isLoading = false;
 
   @override
@@ -32,23 +32,17 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
     final String description = _descController.text.trim();
 
     if (name.isEmpty || goalText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill out all fields.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill out all fields.')));
       return;
     }
 
     final double? goalAmount = double.tryParse(goalText);
     if (goalAmount == null || goalAmount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid goal amount.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid goal amount.')));
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() { _isLoading = true; });
 
     try {
       final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -69,15 +63,10 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
         // Name already exists! Stop here.
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('You already have a campaign with this name!'),
-              backgroundColor: Colors.red,
-            ),
+            const SnackBar(content: Text('You already have a campaign with this name!'), backgroundColor: Colors.red),
           );
         }
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() { _isLoading = false; });
         return;
       }
 
@@ -95,18 +84,14 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
       // 4. Success! Clear form and go back
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Campaign created successfully!'),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text('Campaign created successfully!'), backgroundColor: Colors.green),
         );
         Navigator.pop(context); // Go back to the dashboard
       }
+
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {
@@ -138,11 +123,7 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
               // Header
               Text(
                 "Create Campaign",
-                style: GoogleFonts.inter(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 8),
               Text(
@@ -183,24 +164,16 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
                 height: 55,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(
-                      0xFFFF8C00,
-                    ), // Orange app color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    backgroundColor: const Color(0xFFFF8C00), // Orange app color
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     elevation: 0,
                   ),
                   onPressed: _isLoading ? null : _submitCampaign,
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                  child: _isLoading 
+                      ? const CircularProgressIndicator(color: Colors.white) 
                       : Text(
                           "Submit Campaign",
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                 ),
               ),
@@ -217,19 +190,15 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
       padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
       child: Text(
         text,
-        style: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: Colors.grey[800],
-        ),
+        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey[800]),
       ),
     );
   }
 
   // Helper widget for standardized text fields
   Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
+    required TextEditingController controller, 
+    required String hintText, 
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
   }) {
@@ -247,10 +216,7 @@ class _CreateCampaignPageState extends State<CreateCampaignPage> {
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.redAccent[400]),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
