@@ -63,7 +63,7 @@ class AdressePage extends StatelessWidget {
                         const Divider(height: 32, thickness: 1),
                         _buildAddressTile(
                           title: "SOS Mahres",
-                          address: "Orphelinat، P1\nAl-Maharas 3060",
+                          address: "Orphelinat, P1\nAl-Maharas 3060",
                           icon: Icons.location_on,
                           color: const Color(0xFF009de0),
                         ),
@@ -99,7 +99,7 @@ class AdressePage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color, size: 30),

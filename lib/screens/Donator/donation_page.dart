@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../payement/prepayement_page.dart';
 import '../../widgets/card.dart';
-import 'adress_page.dart';
 
 
 class DonationPage extends StatelessWidget {
