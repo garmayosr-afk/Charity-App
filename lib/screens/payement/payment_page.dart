@@ -13,7 +13,7 @@ const String kKonnectWallet = '69f7ad792fd977d0330e30de';
 const String kKonnectBaseUrl = 'https://api.preprod.konnect.network/api/v2';
 
 // ─── Initiate Payment directly from Flutter ───────────────────────
-Future<Map<String, String>> getPaymentUrl(int amountInTND) async {
+Future<Map<String, String>> getPaymentUrl( amountInTND) async {
   final uid = FirebaseAuth.instance.currentUser!.uid;
   final doc = await FirebaseFirestore.instance
       .collection('users')
@@ -185,13 +185,17 @@ class PaymentResultPage extends StatelessWidget {
 
 // ─── Payment Page (your existing UI, cleaned up) ──────────────────
 class PaymentPage extends StatefulWidget {
-  final String paymentMethod; // "postal" or "bank"
-  final int amount; // in TND
+  final String paymentMethod;
+  final double amount;            // Make sure this says 'double' and not 'int' or 'String'
+  final String? orphanageId;     // Add this line
+  final String? campaignId;      // Add this line
 
   const PaymentPage({
     super.key,
     required this.paymentMethod,
     required this.amount,
+    this.orphanageId,            // Add this line
+    this.campaignId,             // Add this line
   });
 
   @override

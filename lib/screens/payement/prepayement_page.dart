@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
-import 'personalinfo_page.dart';
+import 'personalinfo_page.dart'; // Make sure this points to your InformationsPage file
 
 class PrepayementPage extends StatefulWidget {
   final String? orphanageId;
-
-  const PrepayementPage({super.key, this.orphanageId});
+  final String? campaignId;
+  const PrepayementPage({super.key, this.orphanageId, this.campaignId});
 
   @override
   State<PrepayementPage> createState() => _PrepayementPageState();
 }
 
 class _PrepayementPageState extends State<PrepayementPage> {
-  int? _selectedAmount;
+  double? _selectedAmount; // Changed to double
   final TextEditingController _customAmountController = TextEditingController();
 
-  Widget _buildAmountButton(int amount) {
+  Widget _buildAmountButton(double amount) { // Changed to double
     bool isSelected = _selectedAmount == amount;
     return Expanded(
       child: GestureDetector(
@@ -39,7 +39,8 @@ class _PrepayementPageState extends State<PrepayementPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '$amount',
+                // .toInt() removes the ".0" for whole numbers so it looks clean
+                '${amount.toInt()}', 
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -99,7 +100,6 @@ class _PrepayementPageState extends State<PrepayementPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Icon + Progress Bar Row
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -142,10 +142,7 @@ class _PrepayementPageState extends State<PrepayementPage> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 30),
-
-                    // Title
                     const Text(
                       "Select an amount",
                       style: TextStyle(
@@ -154,35 +151,26 @@ class _PrepayementPageState extends State<PrepayementPage> {
                         color: Color(0xFF132F4C),
                       ),
                     ),
-
                     const SizedBox(height: 16),
-
-                    // Amount buttons row 1
                     Row(
                       children: [
-                        _buildAmountButton(25),
+                        _buildAmountButton(25.0),
                         const SizedBox(width: 16),
-                        _buildAmountButton(50),
+                        _buildAmountButton(50.0),
                       ],
                     ),
-
                     const SizedBox(height: 16),
-
-                    // Amount buttons row 2
                     Row(
                       children: [
-                        _buildAmountButton(100),
+                        _buildAmountButton(100.0),
                         const SizedBox(width: 16),
-                        _buildAmountButton(250),
+                        _buildAmountButton(250.0),
                       ],
                     ),
-
                     const SizedBox(height: 16),
-
-                    // Custom amount field
                     TextField(
                       controller: _customAmountController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         prefixIcon: const Icon(
                           Icons.attach_money,
@@ -211,10 +199,7 @@ class _PrepayementPageState extends State<PrepayementPage> {
                         });
                       },
                     ),
-
                     const SizedBox(height: 30),
-
-                    // Continue button
                     Container(
                       width: double.infinity,
                       height: 55,
@@ -228,7 +213,8 @@ class _PrepayementPageState extends State<PrepayementPage> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
-                          final customAmount = int.tryParse(
+                          // Try Parse as Double now!
+                          final customAmount = double.tryParse(
                             _customAmountController.text.trim(),
                           );
                           final amount = customAmount ?? _selectedAmount;
@@ -236,9 +222,7 @@ class _PrepayementPageState extends State<PrepayementPage> {
                           if (amount == null || amount <= 0) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text(
-                                  'Please select a donation amount.',
-                                ),
+                                content: Text('Please select a donation amount.'),
                               ),
                             );
                             return;
@@ -247,8 +231,11 @@ class _PrepayementPageState extends State<PrepayementPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  InformationsPage(amount: amount),
+                              builder: (context) => InformationsPage(
+                                amount: amount,
+                                orphanageId: widget.orphanageId, // Passing ID
+                                campaignId: widget.campaignId,   // Passing ID
+                              ),
                             ),
                           );
                         },

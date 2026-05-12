@@ -37,69 +37,95 @@ class DonationHistoryPage extends StatelessWidget {
               ),
             )
           : StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('donations')
-                  .where('donor_id', isEqualTo: currentUid)
-                  // Remember: using 'where' and 'orderBy' requires a composite index in Firebase
-                  .orderBy('date', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
+            stream: FirebaseFirestore.instance
+                .collection('donations')
+                .where('donor_id', isEqualTo: currentUid)
+                // Note: Using 'where' and 'orderBy' together requires a composite index in Firebase!
+                // If it fails to load, check your debug console for the direct link to create it.
+                .orderBy('date', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
                     child: CircularProgressIndicator(color: Colors.orange),
-                  );
-                }
+                  ),
+                );
+              }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
                     child: Text(
                       "No donation history yet.",
                       style: GoogleFonts.inter(
                         color: Colors.grey,
-                        fontSize: 16,
+                        fontSize: 15,
                       ),
                     ),
-                  );
-                }
-
-                final donations = snapshot.data!.docs;
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: donations.length,
-                  itemBuilder: (context, index) {
-                    final data =
-                        donations[index].data() as Map<String, dynamic>;
-
-                    // 1. Amount
-                    final double amount = (data['amount'] ?? 0).toDouble();
-
-                    // 2. Date formatting
-                    String dateString = 'Recent';
-                    if (data['date'] != null) {
-                      DateTime date = (data['date'] as Timestamp).toDate();
-                      dateString = "${date.day}/${date.month}/${date.year}";
-                    }
-
-                    // 3. Name Trick Logic
-                    String campaignId =
-                        data['campaign_id']?.toString().trim() ?? '';
-                    String orphanageId =
-                        data['orphanage_id']?.toString().trim() ?? '';
-
-                    String nameToDisplay = campaignId.isNotEmpty
-                        ? campaignId
-                        : orphanageId;
-
-                    return _buildHistoryCard(
-                      '+${amount.toInt()} TND',
-                      nameToDisplay,
-                      dateString,
-                    );
-                  },
+                  ),
                 );
-              },
-            ),
+              }
+
+              final donations = snapshot.data!.docs;
+
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: donations.length,
+                itemBuilder: (context, index) {
+                  final data = donations[index].data() as Map<String, dynamic>;
+
+                  // 1. Amount
+                  final double amount = (data['amount'] ?? 0).toDouble();
+
+                  // 2. Date formatting
+                  String dateString = 'Recent';
+                  if (data['date'] != null) {
+                    DateTime date = (data['date'] as Timestamp).toDate();
+                    dateString = "${date.day}/${date.month}/${date.year}";
+                  }
+
+                  // 3. Extract IDs
+                  String campaignId = data['campaign_id']?.toString().trim() ?? '';
+                  String orphanageId = data['orphanage_id']?.toString().trim() ?? '';
+                  
+                  bool isCampaign = campaignId.isNotEmpty;
+
+                  // 4. FutureBuilder to fetch the actual name from the DB
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: isCampaign
+                        ? FirebaseFirestore.instance.collection('campaigns').doc(campaignId).get()
+                        : FirebaseFirestore.instance.collection('users').doc(orphanageId).get(),
+                    builder: (context, nameSnapshot) {
+                      
+                      String nameToDisplay = '...'; // Shows briefly while loading
+
+                      if (nameSnapshot.connectionState == ConnectionState.done) {
+                        if (nameSnapshot.hasData && nameSnapshot.data!.exists) {
+                          final docData = nameSnapshot.data!.data() as Map<String, dynamic>;
+                          
+                          // It will try to find 'name'. If your campaign uses 'title' instead, it will find that!
+                          nameToDisplay = docData['name'] ?? docData['title'] ?? (isCampaign ? 'Unknown Campaign' : 'Unknown Orphanage');
+                        } else {
+                          nameToDisplay = isCampaign ? 'Unknown Campaign' : 'Unknown Orphanage';
+                        }
+                      }
+
+                      // 5. Return your exact UI card
+                      return _buildHistoryCard(
+                        '+${amount.toInt()} TND',
+                        nameToDisplay,
+                        dateString,
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
     );
   }
 

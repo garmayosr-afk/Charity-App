@@ -27,6 +27,8 @@ class _DonatorPageState extends State<DonatorPage> {
         child: Column(
           children: [
             _buildHeader(),
+            // THE NEW SEARCH RESULTS LIST VIEW
+            _buildSearchResults(),
             const SizedBox(height: 10),
             _buildStatsRow(),
             const SizedBox(height: 24),
@@ -84,13 +86,51 @@ class _DonatorPageState extends State<DonatorPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Yosr',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          FutureBuilder<DocumentSnapshot>(
+                            future: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser?.uid)
+                                .get(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text(
+                                  'Loading...',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white70,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              }
+
+                              if (snapshot.hasError ||
+                                  !snapshot.hasData ||
+                                  !snapshot.data!.exists) {
+                                return Text(
+                                  'Welcome!',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              }
+
+                              final userData = snapshot.data!.data()
+                                  as Map<String, dynamic>?;
+                              final userName =
+                                  userData?['name'] ?? 'Friend';
+
+                              return Text(
+                                userName,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -123,7 +163,7 @@ class _DonatorPageState extends State<DonatorPage> {
               Container(
                 height: 50,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2C2C2C), // Dark search bar
+                  color: const Color(0xFF2C2C2C),
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
@@ -144,7 +184,7 @@ class _DonatorPageState extends State<DonatorPage> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      searchQuery = value.toLowerCase();
+                      searchQuery = value.toLowerCase().trim();
                     });
                   },
                 ),
@@ -153,6 +193,132 @@ class _DonatorPageState extends State<DonatorPage> {
           ),
         ),
       ),
+    );
+  }
+
+  // --- NEW: SEARCH RESULTS LOGIC ---
+  Future<List<Map<String, dynamic>>> _fetchCombinedSearchResults() async {
+    List<Map<String, dynamic>> results = [];
+
+    // 1. Fetch campaigns
+    var campaignQuery =
+        await FirebaseFirestore.instance.collection('campaigns').get();
+    for (var doc in campaignQuery.docs) {
+      var data = doc.data();
+      String name = data['name'] ?? data['title'] ?? '';
+      if (name.toLowerCase().contains(searchQuery)) {
+        results.add({
+          'id': doc.id,
+          'name': name,
+          'type': 'Campaign',
+          'orphanage_id': data['orphanage_id'] ?? '',
+        });
+      }
+    }
+
+    // 2. Fetch orphanages
+    var orphanageQuery =
+        await FirebaseFirestore.instance.collection('orphanages').get();
+    for (var doc in orphanageQuery.docs) {
+      var data = doc.data();
+      String name = data['name'] ?? '';
+      if (name.toLowerCase().contains(searchQuery)) {
+        results.add({
+          'id': doc.id,
+          'name': name,
+          'type': 'Orphanage',
+          'orphanage_id': doc.id, // For an orphanage, its own ID is the orphanage_id
+        });
+      }
+    }
+
+    return results;
+  }
+
+  // --- NEW: SEARCH RESULTS WIDGET ---
+  Widget _buildSearchResults() {
+    if (searchQuery.isEmpty) return const SizedBox(); // Hide when empty
+
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _fetchCombinedSearchResults(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: CircularProgressIndicator(color: Colors.orange),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              "No results found.",
+              style: GoogleFonts.inter(color: Colors.grey),
+            ),
+          );
+        }
+
+        final items = snapshot.data!;
+
+        return Container(
+          margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              )
+            ],
+          ),
+          child: ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            separatorBuilder: (context, index) =>
+                Divider(color: Colors.grey.shade200, height: 1),
+            itemBuilder: (context, index) {
+              final item = items[index];
+
+              return ListTile(
+                title: Text(
+                  item['name'],
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                subtitle: Text(
+                  item['type'],
+                  style: GoogleFonts.inter(
+                    color: item['type'] == 'Campaign'
+                        ? Colors.orange
+                        : Colors.blue,
+                    fontSize: 12,
+                  ),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+                onTap: () {
+                  // Navigate to DonationPage with correct IDs
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DonationPage(
+                        orphanageId: item['orphanage_id'],
+                        campaignId:
+                            item['type'] == 'Campaign' ? item['id'] : null,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -166,7 +332,6 @@ class _DonatorPageState extends State<DonatorPage> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      // FIRST STREAM: Listen to the user's donations
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('donations')
@@ -184,7 +349,6 @@ class _DonatorPageState extends State<DonatorPage> {
             }
           }
 
-          // SECOND STREAM: Listen to orphanages where user is a unique donor
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('orphanages')
@@ -259,20 +423,18 @@ class _DonatorPageState extends State<DonatorPage> {
     );
   }
 
-  // 3. URGENT NEEDS SECTION (Now completely dynamic!)
+  // 3. URGENT NEEDS SECTION
   Widget _buildUrgentSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               InkWell(
                 onTap: () {
                   Navigator.push(
-                    // Make sure you use push() and not pushReplacement()
                     context,
                     MaterialPageRoute(
                       builder: (context) => const DonationViewPage(),
@@ -297,8 +459,6 @@ class _DonatorPageState extends State<DonatorPage> {
             ],
           ),
           const SizedBox(height: 12),
-
-          // StreamBuilder for ALL campaigns
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('campaigns')
@@ -332,22 +492,24 @@ class _DonatorPageState extends State<DonatorPage> {
                 itemBuilder: (context, index) {
                   final data = campaigns[index].data() as Map<String, dynamic>;
 
+                  // EXTRACT IDS
+                  final String currentCampaignId = campaigns[index].id;
+                  final String currentOrphanageId =
+                      data['orphanage_id']?.toString() ?? '';
+
                   final String title = data['name'] ?? 'Unnamed Campaign';
                   final String description =
                       data['description'] ?? 'No description provided';
                   final double goal = (data['goal_amount'] ?? 1).toDouble();
                   final double raised = (data['raised_amount'] ?? 0).toDouble();
 
-                  // Calculate percentage for the progress bar
                   double percent = raised / goal;
-                  if (percent > 1.0) {
-                    percent = 1.0;
-                  }
-                  if (percent.isNaN || percent.isInfinite) {
-                    percent = 0.0;
-                  }
+                  if (percent > 1.0) percent = 1.0;
+                  if (percent.isNaN || percent.isInfinite) percent = 0.0;
 
                   return _buildUrgentCard(
+                    campaignId: currentCampaignId,
+                    orphanageId: currentOrphanageId,
                     title: title,
                     description: description,
                     goal: 'goal: ${goal.toInt()} TND',
@@ -362,8 +524,10 @@ class _DonatorPageState extends State<DonatorPage> {
     );
   }
 
-  // UPDATED URGENT CARD (No emojis, English 'Donate', dynamic text)
+  // UPDATED URGENT CARD
   Widget _buildUrgentCard({
+    required String campaignId,
+    required String orphanageId,
     required String title,
     required String description,
     required String goal,
@@ -380,15 +544,21 @@ class _DonatorPageState extends State<DonatorPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left Side (Donate Button & Progress Bar)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Donate Button
               InkWell(
                 onTap: () {
-                  // Add your donation navigation logic here
-                  debugPrint("Donate clicked for $title");
+                  // NEW ROUTING: Goes to donation page passing variables
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DonationPage(
+                        campaignId: campaignId,
+                        orphanageId: orphanageId,
+                      ),
+                    ),
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -409,8 +579,6 @@ class _DonatorPageState extends State<DonatorPage> {
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Progress Bar with Percentage
               SizedBox(
                 width: 100,
                 child: Row(
@@ -437,8 +605,6 @@ class _DonatorPageState extends State<DonatorPage> {
               ),
             ],
           ),
-
-          // Right Side (Text data)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -478,24 +644,19 @@ class _DonatorPageState extends State<DonatorPage> {
     );
   }
 
-  // 4. HISTORY SECTION
-  // 3. DONATION HISTORY SECTION
+  // 4. DONATION HISTORY SECTION
   Widget _buildDonationHistorySection() {
     final String? currentUid = FirebaseAuth.instance.currentUser?.uid;
 
-    if (currentUid == null) {
-      return const SizedBox(); // Hide if not logged in
-    }
+    if (currentUid == null) return const SizedBox();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // You mentioned you will build the View All logic yourself!
               InkWell(
                 onTap: () {
                   Navigator.push(
@@ -529,14 +690,10 @@ class _DonatorPageState extends State<DonatorPage> {
             ],
           ),
           const SizedBox(height: 12),
-
-          // LIVE STREAMBUILDER
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('donations')
                 .where('donor_id', isEqualTo: currentUid)
-                // Note: Using 'where' and 'orderBy' together requires a composite index in Firebase!
-                // If it fails to load, check your debug console for the direct link to create it.
                 .orderBy('date', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
@@ -572,32 +729,59 @@ class _DonatorPageState extends State<DonatorPage> {
                 itemCount: donations.length,
                 itemBuilder: (context, index) {
                   final data = donations[index].data() as Map<String, dynamic>;
-
-                  // 1. Amount
                   final double amount = (data['amount'] ?? 0).toDouble();
 
-                  // 2. Date formatting
                   String dateString = 'Recent';
                   if (data['date'] != null) {
                     DateTime date = (data['date'] as Timestamp).toDate();
-                    // Assuming you want standard formatting, adjust as needed!
                     dateString = "${date.day}/${date.month}/${date.year}";
                   }
 
-                  // 3. Name Trick Logic
                   String campaignId =
                       data['campaign_id']?.toString().trim() ?? '';
                   String orphanageId =
                       data['orphanage_id']?.toString().trim() ?? '';
 
-                  String nameToDisplay = campaignId.isNotEmpty
-                      ? campaignId
-                      : orphanageId;
+                  bool isCampaign = campaignId.isNotEmpty;
 
-                  return _buildHistoryCard(
-                    '+${amount.toInt()} TND',
-                    nameToDisplay,
-                    dateString,
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: isCampaign
+                        ? FirebaseFirestore.instance
+                            .collection('campaigns')
+                            .doc(campaignId)
+                            .get()
+                        : FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(orphanageId)
+                            .get(),
+                    builder: (context, nameSnapshot) {
+                      String nameToDisplay = '...';
+
+                      if (nameSnapshot.connectionState ==
+                          ConnectionState.done) {
+                        if (nameSnapshot.hasData &&
+                            nameSnapshot.data!.exists) {
+                          final docData = nameSnapshot.data!.data()
+                              as Map<String, dynamic>;
+
+                          nameToDisplay = docData['name'] ??
+                              docData['title'] ??
+                              (isCampaign
+                                  ? 'Unknown Campaign'
+                                  : 'Unknown Orphanage');
+                        } else {
+                          nameToDisplay = isCampaign
+                              ? 'Unknown Campaign'
+                              : 'Unknown Orphanage';
+                        }
+                      }
+
+                      return _buildHistoryCard(
+                        '+${amount.toInt()} TND',
+                        nameToDisplay,
+                        dateString,
+                      );
+                    },
                   );
                 },
               );
@@ -608,7 +792,6 @@ class _DonatorPageState extends State<DonatorPage> {
     );
   }
 
-  // THE UI FOR THE INDIVIDUAL HISTORY CARD
   Widget _buildHistoryCard(String amount, String nameText, String dateString) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -621,14 +804,13 @@ class _DonatorPageState extends State<DonatorPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left side: Amount & Confirmed
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 amount,
                 style: GoogleFonts.inter(
-                  color: const Color(0xFFD32F2F), // Reddish-orange
+                  color: const Color(0xFFD32F2F),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -640,7 +822,7 @@ class _DonatorPageState extends State<DonatorPage> {
                     Icons.check,
                     color: Color(0xFF81C784),
                     size: 14,
-                  ), // Light green
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     'Confirmé',
@@ -654,8 +836,6 @@ class _DonatorPageState extends State<DonatorPage> {
               ),
             ],
           ),
-
-          // Right side: Name, Date, Icon
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -691,13 +871,13 @@ class _DonatorPageState extends State<DonatorPage> {
                   height: 45,
                   width: 45,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF3E0), // Light orange background
+                    color: const Color(0xFFFFF3E0),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Center(
                     child: Icon(
-                      Icons.favorite, // Heart icon
-                      color: Color(0xFFFF9800), // Orange
+                      Icons.favorite,
+                      color: Color(0xFFFF9800),
                       size: 20,
                     ),
                   ),
@@ -728,18 +908,8 @@ class _DonatorPageState extends State<DonatorPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(
-              0,
-              Icons.person,
-              const Color(0xFF4A148C),
-              'My Account',
-            ),
-            _buildNavItem(
-              1,
-              Icons.assignment,
-              Colors.orangeAccent,
-              'Donations',
-            ),
+            _buildNavItem(0, Icons.person, const Color(0xFF4A148C), 'My Account'),
+            _buildNavItem(1, Icons.assignment, Colors.orangeAccent, 'Donations'),
             _buildNavItem(2, Icons.home, Colors.redAccent, 'Home'),
             _buildNavItem(3, Icons.card_giftcard, Colors.red, 'Donate Now'),
             _buildNavItem(4, Icons.info_outline, Colors.blue, 'About Us'),
@@ -760,7 +930,6 @@ class _DonatorPageState extends State<DonatorPage> {
       onTap: () {
         setState(() {
           _selectedIndex = index;
-          // Routing Logic
           if (index == 0) {
             Navigator.push(
               context,
@@ -792,9 +961,7 @@ class _DonatorPageState extends State<DonatorPage> {
         children: [
           Icon(
             icon,
-            color: isSelected
-                ? Colors.orange
-                : iconColor.withValues(alpha: 0.6),
+            color: isSelected ? Colors.orange : iconColor.withValues(alpha: 0.6),
             size: 28,
           ),
           const SizedBox(height: 4),

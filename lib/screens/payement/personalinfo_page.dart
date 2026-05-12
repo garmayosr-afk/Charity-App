@@ -1,32 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/background.dart';
 import '../../widgets/text_field.dart';
 import 'payementmethode_page.dart';
 
-Future<void> savePaymentDetails(
-  String name,
-  String companyName,
-  String phoneNumber,
-  String email,
-) async {
-  final user = FirebaseAuth.instance.currentUser;
-
-  await FirebaseFirestore.instance.collection('payements').add({
-    'uid': user?.uid,
-    'name': name,
-    'company_name': companyName,
-    'email': email,
-    'phone_number': phoneNumber,
-    'timestamp': FieldValue.serverTimestamp(),
-  });
-}
-
 class InformationsPage extends StatefulWidget {
-  final int amount;
-
-  const InformationsPage({super.key, required this.amount});
+  final double amount; // Changed to double
+  final String? orphanageId;
+  final String? campaignId;
+  
+  const InformationsPage({
+    super.key, 
+    required this.amount, 
+    this.orphanageId, 
+    this.campaignId
+  });
 
   @override
   State<InformationsPage> createState() => _InformationsPageState();
@@ -47,9 +34,68 @@ class _InformationsPageState extends State<InformationsPage> {
     super.dispose();
   }
 
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _validateAndProceed() {
+    String name = nameController.text.trim();
+    String company = companynameController.text.trim();
+    String phone = phonenumberController.text.trim();
+    String email = emailController.text.trim();
+
+    // 1. Validation: Empty Check
+    if (name.isEmpty || phone.isEmpty || email.isEmpty) {
+      _showError('Please fill in all required fields (Name, Phone, Email).');
+      return;
+    }
+
+    // 2. Validation: Email Regex
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) {
+      _showError('Please enter a valid email address.');
+      return; 
+    }
+
+    // 3. Validation: Phone Regex (allows optional +, spaces, dashes, 8-15 digits)
+    final phoneRegex = RegExp(r'^\+?[\d\s-]{8,15}$');
+    if (!phoneRegex.hasMatch(phone)) {
+      _showError('Please enter a valid phone number (digits only).');
+      return; 
+    }
+
+    // 4. Send EVERYTHING to Payment Method Page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PayementMethodPage(
+          amount: widget.amount,
+          orphanageId: widget.orphanageId,
+          campaignId: widget.campaignId,
+          donorName: name,
+          donorCompany: company,
+          donorPhone: phone,
+          donorEmail: email,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
       body: Background(
         child: SafeArea(
           child: Padding(
@@ -57,7 +103,7 @@ class _InformationsPageState extends State<InformationsPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   const Text(
                     "Personal Information",
                     style: TextStyle(
@@ -70,8 +116,8 @@ class _InformationsPageState extends State<InformationsPage> {
                   const SizedBox(height: 50),
                   AppTextField(
                     controller: nameController,
-                    hintText: 'Full Name',
-                    label: 'Full Name',
+                    hintText: 'Full Name *',
+                    label: 'Full Name *',
                   ),
                   const SizedBox(height: 30),
                   AppTextField(
@@ -82,14 +128,14 @@ class _InformationsPageState extends State<InformationsPage> {
                   const SizedBox(height: 30),
                   AppTextField(
                     controller: phonenumberController,
-                    hintText: 'Phone Number',
-                    label: 'Phone number',
+                    hintText: 'Phone Number *',
+                    label: 'Phone number *',
                   ),
                   const SizedBox(height: 30),
                   AppTextField(
                     controller: emailController,
-                    hintText: 'Email',
-                    label: 'Email',
+                    hintText: 'Email *',
+                    label: 'Email *',
                   ),
                   const SizedBox(height: 30),
                   SizedBox(
@@ -102,26 +148,7 @@ class _InformationsPageState extends State<InformationsPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () async {
-                        await savePaymentDetails(
-                          nameController.text.trim(),
-                          companynameController.text.trim(),
-                          phonenumberController.text.trim(),
-                          emailController.text.trim(),
-                        );
-                        if (!context.mounted ||
-                            FirebaseAuth.instance.currentUser == null) {
-                          return;
-                        }
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PayementMethodPage(amount: widget.amount),
-                          ),
-                        );
-                      },
+                      onPressed: _validateAndProceed,
                       child: const Text(
                         "Continue Payment",
                         style: TextStyle(color: Colors.white, fontSize: 18),

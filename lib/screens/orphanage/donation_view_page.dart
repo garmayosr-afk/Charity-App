@@ -171,14 +171,6 @@ class _DonationViewPageState extends State<DonationViewPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(
-                              'View All',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFFFF8C00),
-                              ),
-                            ),
                           ],
                         ),
 

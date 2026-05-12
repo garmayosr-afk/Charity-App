@@ -19,21 +19,20 @@ class _DonationViewPageState extends State<DonationViewPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () =>
-              Navigator.pop(context), // This returns you to the previous page
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
 
-                // 2. BOTTOM CONTAINER (Urgent Needs / Campaigns)
-                Container(
+              // We wrap your container in Expanded so it takes up the rest of the screen
+              Expanded(
+                child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -50,7 +49,7 @@ class _DonationViewPageState extends State<DonationViewPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ROW (Header text)
+                        // HEADER TEXT (Stays fixed at the top)
                         Text(
                           'All Urgent Needs',
                           style: GoogleFonts.inter(
@@ -63,31 +62,21 @@ class _DonationViewPageState extends State<DonationViewPage> {
                         const Divider(thickness: 1, color: Color(0xFFF0F0F0)),
                         const SizedBox(height: 12),
 
-                        // LIVE STREAMBUILDER (Shows ALL campaigns)
-                        StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('campaigns')
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(20.0),
-                                  child: CircularProgressIndicator(
-                                    color: Colors.orange,
-                                  ),
-                                ),
-                              );
-                            }
+                        // We wrap the StreamBuilder in Expanded so the ListView can scroll freely inside it
+                        Expanded(
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('campaigns')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(color: Colors.orange),
+                                );
+                              }
 
-                            if (!snapshot.hasData ||
-                                snapshot.data!.docs.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 20,
-                                ),
-                                child: Center(
+                              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                                return Center(
                                   child: Text(
                                     "No urgent needs at the moment.",
                                     style: GoogleFonts.inter(
@@ -95,63 +84,51 @@ class _DonationViewPageState extends State<DonationViewPage> {
                                       fontSize: 15,
                                     ),
                                   ),
-                                ),
-                              );
-                            }
-
-                            final campaigns = snapshot.data!.docs;
-
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: campaigns.length,
-                              itemBuilder: (context, index) {
-                                final data =
-                                    campaigns[index].data()
-                                        as Map<String, dynamic>;
-
-                                final String title =
-                                    data['name'] ?? 'Unnamed Campaign';
-                                final String description =
-                                    data['description'] ??
-                                    'No description provided';
-                                final double goal = (data['goal_amount'] ?? 1)
-                                    .toDouble();
-                                final double raised =
-                                    (data['raised_amount'] ?? 0).toDouble();
-
-                                // Calculate percentage
-                                double percent = raised / goal;
-                                if (percent > 1.0) {
-                                  percent = 1.0;
-                                }
-                                if (percent.isNaN || percent.isInfinite) {
-                                  percent = 0.0;
-                                }
-
-                                return _buildUrgentCard(
-                                  title: title,
-                                  description: description,
-                                  goal: 'goal: ${goal.toInt()} TND',
-                                  percent: percent,
                                 );
-                              },
-                            );
-                          },
+                              }
+
+                              final campaigns = snapshot.data!.docs;
+
+                              return ListView.builder(
+                                // REMOVED shrinkWrap and NeverScrollableScrollPhysics!
+                                // Now this list will scroll perfectly on its own.
+                                itemCount: campaigns.length,
+                                itemBuilder: (context, index) {
+                                  final data = campaigns[index].data() as Map<String, dynamic>;
+
+                                  final String title = data['name'] ?? 'Unnamed Campaign';
+                                  final String description = data['description'] ?? 'No description provided';
+                                  final double goal = (data['goal_amount'] ?? 1).toDouble();
+                                  final double raised = (data['raised_amount'] ?? 0).toDouble();
+
+                                  double percent = raised / goal;
+                                  if (percent > 1.0) percent = 1.0;
+                                  if (percent.isNaN || percent.isInfinite) percent = 0.0;
+
+                                  return _buildUrgentCard(
+                                    title: title,
+                                    description: description,
+                                    goal: 'goal: ${goal.toInt()} TND',
+                                    percent: percent,
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // REPLACED WIDGET: The new Urgent Card design
+  // Your exact card widget, completely unchanged
   Widget _buildUrgentCard({
     required String title,
     required String description,
@@ -169,21 +146,15 @@ class _DonationViewPageState extends State<DonationViewPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left Side (Donate Button & Progress Bar)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Donate Button
               InkWell(
                 onTap: () {
-                  // Add your donation navigation logic here
                   debugPrint("Donate clicked for $title");
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 6,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.orange),
                     borderRadius: BorderRadius.circular(8),
@@ -198,18 +169,13 @@ class _DonationViewPageState extends State<DonationViewPage> {
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Progress Bar with Percentage
               SizedBox(
                 width: 100,
                 child: Row(
                   children: [
                     Text(
                       '${(percent * 100).toInt()}%',
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
+                      style: GoogleFonts.inter(fontSize: 10, color: Colors.grey),
                     ),
                     const SizedBox(width: 4),
                     Expanded(
@@ -226,26 +192,18 @@ class _DonationViewPageState extends State<DonationViewPage> {
               ),
             ],
           ),
-
-          // Right Side (Text data)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                  style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14),
                   textAlign: TextAlign.right,
                 ),
                 Text(
                   description,
-                  style: GoogleFonts.inter(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
-                  ),
+                  style: GoogleFonts.inter(color: Colors.grey.shade600, fontSize: 12),
                   textAlign: TextAlign.right,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -253,10 +211,7 @@ class _DonationViewPageState extends State<DonationViewPage> {
                 const SizedBox(height: 8),
                 Text(
                   goal,
-                  style: GoogleFonts.inter(
-                    color: Colors.grey.shade500,
-                    fontSize: 10,
-                  ),
+                  style: GoogleFonts.inter(color: Colors.grey.shade500, fontSize: 10),
                   textAlign: TextAlign.right,
                 ),
               ],
